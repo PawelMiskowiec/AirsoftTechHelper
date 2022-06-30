@@ -1,6 +1,6 @@
-package com.example.airsofttechhelper.menu.application.port;
+package com.example.airsofttechhelper.replica.application.port;
 
-import com.example.airsofttechhelper.menu.domain.Replica;
+import com.example.airsofttechhelper.replica.domain.Replica;
 
 import java.util.List;
 import java.util.Optional;

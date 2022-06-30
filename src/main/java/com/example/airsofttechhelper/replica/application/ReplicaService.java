@@ -1,8 +1,8 @@
-package com.example.airsofttechhelper.menu.application;
+package com.example.airsofttechhelper.replica.application;
 
-import com.example.airsofttechhelper.menu.application.port.ReplicaUseCase;
-import com.example.airsofttechhelper.menu.db.ReplicaRepository;
-import com.example.airsofttechhelper.menu.domain.Replica;
+import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase;
+import com.example.airsofttechhelper.replica.db.ReplicaRepository;
+import com.example.airsofttechhelper.replica.domain.Replica;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,11 +1,7 @@
-package com.example.airsofttechhelper.menu.web;
+package com.example.airsofttechhelper.replica.web;
 
-import com.example.airsofttechhelper.menu.domain.Replica;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 

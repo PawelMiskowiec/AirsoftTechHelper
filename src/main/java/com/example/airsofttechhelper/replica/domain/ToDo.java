@@ -1,4 +1,4 @@
-package com.example.airsofttechhelper.menu.domain;
+package com.example.airsofttechhelper.replica.domain;
 
 import com.example.airsofttechhelper.jpa.BaseEntity;
 

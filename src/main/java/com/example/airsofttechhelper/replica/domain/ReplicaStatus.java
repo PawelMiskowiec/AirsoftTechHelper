@@ -1,4 +1,4 @@
-package com.example.airsofttechhelper.menu.domain;
+package com.example.airsofttechhelper.replica.domain;
 
 public enum ReplicaStatus {
     NEW, INPROGRESS, TESTING, FINISHED;

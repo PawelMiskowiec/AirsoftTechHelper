@@ -1,6 +1,8 @@
-package com.example.airsofttechhelper.menu.domain;
+package com.example.airsofttechhelper.replica.domain;
 
 import com.example.airsofttechhelper.jpa.BaseEntity;
+import com.example.airsofttechhelper.part.domain.Part;
+import com.example.airsofttechhelper.part.domain.SinglePart;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -8,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -19,22 +22,29 @@ import java.util.Set;
 @Table(name = "replica")
 @EntityListeners(AuditingEntityListener.class)
 public class Replica extends BaseEntity {
+
     private String name;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "owner_id")
-    private Owner owner;
-
-    @Builder.Default
-    @Enumerated(EnumType.STRING)
-    private ReplicaStatus status = ReplicaStatus.NEW;
 
     private String description;
 
     private String additionalEquipment;
 
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    private ReplicaStatus status = ReplicaStatus.NEW;
+
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST},
+            fetch = FetchType.EAGER)
+    @JoinColumn(name = "owner_id")
+    private Owner owner;
+
     @OneToMany(cascade = CascadeType.ALL)
-    private Set<ToDo> toDos;
+    @JoinColumn(name = "replica_id")
+    private Set<SinglePart> SingleParts = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "replica_id")
+    private Set<ToDo> toDos = new HashSet<>();
 
     @CreatedDate
     private LocalDateTime createdAt;
