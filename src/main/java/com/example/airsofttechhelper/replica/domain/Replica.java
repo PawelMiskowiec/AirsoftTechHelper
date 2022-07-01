@@ -46,6 +46,13 @@ public class Replica extends BaseEntity {
     @JoinColumn(name = "replica_id")
     private Set<ToDo> toDos = new HashSet<>();
 
+    public Replica(String name, String description, String additionalEquipment, Owner owner) {
+        this.name = name;
+        this.description = description;
+        this.additionalEquipment = additionalEquipment;
+        this.owner = owner;
+    }
+
     @CreatedDate
     private LocalDateTime createdAt;
 
