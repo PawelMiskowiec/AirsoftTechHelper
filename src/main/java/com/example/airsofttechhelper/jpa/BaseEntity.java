@@ -33,6 +33,6 @@ public class BaseEntity {
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return uuid.hashCode();
     }
 }
