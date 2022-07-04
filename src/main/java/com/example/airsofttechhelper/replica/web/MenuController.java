@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
@@ -74,7 +75,7 @@ public class MenuController {
         private String additionalEquipment;
 
         @Valid
-        private OwnerCommand owner;
+        private RestOwnerCommand owner;
 
         CreateReplicaCommand toCreateCommand(){
             return new CreateReplicaCommand(name, description, additionalEquipment, owner.toCreateOwnerCommand());
@@ -82,7 +83,7 @@ public class MenuController {
     }
 
     @Data
-    static class OwnerCommand{
+    static class RestOwnerCommand {
         @NotBlank(message = "Please provide an Owner name")
         private String name;
 
@@ -98,7 +99,7 @@ public class MenuController {
         @NotBlank(message = "Please provide an Owner zipCode")
         private String zipCode;
 
-        @NotBlank(message = "Please provide an Owner email")
+        @Email(message = "Please provide an Owner email")
         private String email;
 
         CreateOwnerCommand toCreateOwnerCommand(){
