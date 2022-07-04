@@ -5,6 +5,7 @@ import com.example.airsofttechhelper.replica.db.OwnerRepository;
 import com.example.airsofttechhelper.replica.db.ReplicaRepository;
 import com.example.airsofttechhelper.replica.domain.Owner;
 import com.example.airsofttechhelper.replica.domain.Replica;
+import com.example.airsofttechhelper.replica.domain.ReplicaStatus;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,18 @@ public class ReplicaService implements ReplicaUseCase {
     }
 
     @Override
+    public List<Replica> findByStatus(String status) {
+        return repository.findByStatusIsContaining(toReplicaStatus(status));
+    }
+
+    private ReplicaStatus toReplicaStatus(String status){
+        return ReplicaStatus.parseString(status)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(status + " is not a valid replica status")
+                );
+    }
+
+    @Override
     public Optional<Replica> findOneById(Long id) {
         return repository.findById(id);
     }
@@ -42,13 +55,24 @@ public class ReplicaService implements ReplicaUseCase {
                 .name(command.getName())
                 .description(command.getDescription())
                 .additionalEquipment(command.getAdditionalEquipment())
-                .owner(getOrCreateOwner(command.getOwner()))
+                .owner(getOrCreateOwner(command.getOwnerCommand()))
                 .build();
     }
 
-    private Owner getOrCreateOwner(Owner owner) {
-        return ownerRepository.findByEmailIgnoreCase(owner.getEmail())
-                .orElse(ownerRepository.save(owner));
+    private Owner getOrCreateOwner(CreateOwnerCommand ownerCommand) {
+        return ownerRepository.findByEmailIgnoreCase(ownerCommand.getEmail())
+                .orElse(ownerRepository.save(toOwner(ownerCommand)));
+    }
+
+    private Owner toOwner(CreateOwnerCommand command){
+        return new Owner(
+                command.getName(),
+                command.getPhone(),
+                command.getStreet(),
+                command.getCity(),
+                command.getZipCode(),
+                command.getEmail()
+            );
     }
 
     @Override

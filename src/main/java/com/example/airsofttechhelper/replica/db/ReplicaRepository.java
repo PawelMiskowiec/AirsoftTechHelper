@@ -1,8 +1,11 @@
 package com.example.airsofttechhelper.replica.db;
 
 import com.example.airsofttechhelper.replica.domain.Replica;
+import com.example.airsofttechhelper.replica.domain.ReplicaStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ReplicaRepository extends JpaRepository<Replica, Long> {
+import java.util.List;
 
+public interface ReplicaRepository extends JpaRepository<Replica, Long> {
+    List<Replica> findByStatusIsContaining(ReplicaStatus status);
 }

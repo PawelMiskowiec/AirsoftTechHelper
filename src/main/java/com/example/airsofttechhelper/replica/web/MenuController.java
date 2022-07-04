@@ -1,13 +1,11 @@
 package com.example.airsofttechhelper.replica.web;
 
-import com.example.airsofttechhelper.replica.application.ReplicaService;
 import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase;
-import com.example.airsofttechhelper.replica.domain.Owner;
+import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase.CreateOwnerCommand;
 import com.example.airsofttechhelper.replica.domain.Replica;
 import com.example.airsofttechhelper.web.CreatedURI;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +15,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.airsofttechhelper.replica.application.port.ReplicaUseCase.CreateReplicaCommand;
@@ -29,22 +28,31 @@ public class MenuController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<MenuReplica> getReplicas(){
-        return replicaService.findAll()
+    public List<RestReplica> getReplicas(@RequestParam Optional<String> status){
+        List<RestReplica> replicas;
+        if(status.isPresent()){
+            replicas = replicaService.findByStatus(status.get())
+                    .stream()
+                    .map(this::toRestReplica)
+                    .collect(Collectors.toList());
+        }
+        replicas= replicaService.findAll()
                 .stream()
-                .map(this::toMenuReplica)
+                .map(this::toRestReplica)
                 .collect(Collectors.toList());
+
+        return replicas;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MenuReplica> getReplicaById(@PathVariable Long id){
+    public ResponseEntity<RestReplica> getReplicaById(@PathVariable Long id){
         return replicaService.findOneById(id)
-                .map(replica -> ResponseEntity.ok(toMenuReplica(replica)))
+                .map(replica -> ResponseEntity.ok(toRestReplica(replica)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    private MenuReplica toMenuReplica(Replica replica) {
-        return new MenuReplica(replica.getId(), replica.getName(), replica.getStatus(), replica.getCreatedAt(), replica.getOwner().getEmail());
+    private RestReplica toRestReplica(Replica replica) {
+        return new RestReplica(replica.getId(), replica.getName(), replica.getStatus(), replica.getCreatedAt(), replica.getOwner().getEmail());
     }
 
     @PostMapping
@@ -65,9 +73,37 @@ public class MenuController {
         @NotNull(message = "Please provide an additional equipment")
         private String additionalEquipment;
 
-        @NotNull(message = "Please provide an Owner")
-        private Owner owner;
+        @Valid
+        private OwnerCommand owner;
 
-        CreateReplicaCommand toCreateCommand(){ return new CreateReplicaCommand(name, description, additionalEquipment, owner); }
+        CreateReplicaCommand toCreateCommand(){
+            return new CreateReplicaCommand(name, description, additionalEquipment, owner.toCreateOwnerCommand());
+        }
     }
+
+    @Data
+    static class OwnerCommand{
+        @NotBlank(message = "Please provide an Owner name")
+        private String name;
+
+        @NotBlank(message = "Please provide an Owner phone number")
+        private String phone;
+
+        @NotBlank(message = "Please provide an Owner street")
+        private String street;
+
+        @NotBlank(message = "Please provide an Owner city")
+        private String city;
+
+        @NotBlank(message = "Please provide an Owner zipCode")
+        private String zipCode;
+
+        @NotBlank(message = "Please provide an Owner email")
+        private String email;
+
+        CreateOwnerCommand toCreateOwnerCommand(){
+            return new CreateOwnerCommand(name, phone, street, city, zipCode, email);
+        }
+    }
+
 }
