@@ -1,7 +1,5 @@
 package com.example.airsofttechhelper.replica.domain;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -10,9 +8,7 @@ public enum ReplicaStatus {
         @Override
         public ReplicaStatus changeStatus(ReplicaStatus newStatus){
             return switch (newStatus){
-                case NEW -> NEW;
-                case INPROGRESS -> INPROGRESS;
-                case TESTING -> TESTING;
+                case NEW, TESTING, INPROGRESS -> newStatus;
                 default -> super.changeStatus(newStatus);
             };
         }
@@ -21,8 +17,7 @@ public enum ReplicaStatus {
         @Override
         public ReplicaStatus changeStatus(ReplicaStatus newStatus){
             return switch (newStatus){
-                case INPROGRESS -> INPROGRESS;
-                case TESTING -> TESTING;
+                case INPROGRESS, TESTING -> newStatus;
                 default -> super.changeStatus(newStatus);
             };
         }
@@ -30,8 +25,7 @@ public enum ReplicaStatus {
         @Override
         public ReplicaStatus changeStatus(ReplicaStatus newStatus){
             return switch (newStatus){
-                case TESTING -> TESTING;
-                case FINISHED -> FINISHED;
+                case INPROGRESS, TESTING, FINISHED -> newStatus;
                 default -> super.changeStatus(newStatus);
             };
         }
@@ -44,6 +38,6 @@ public enum ReplicaStatus {
                 .findFirst();
     }
     public ReplicaStatus changeStatus(ReplicaStatus newStatus){
-        throw new IllegalArgumentException("Unable to mark " + this.name() + " replica as " + newStatus.name());
+        throw new IllegalArgumentException("Unable to change the replica status from " + this.name() + " to " + newStatus.name());
     }
 }

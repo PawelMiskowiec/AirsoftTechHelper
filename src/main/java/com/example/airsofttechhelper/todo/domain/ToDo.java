@@ -1,4 +1,4 @@
-package com.example.airsofttechhelper.replica.domain;
+package com.example.airsofttechhelper.todo.domain;
 
 import com.example.airsofttechhelper.jpa.BaseEntity;
 import lombok.AllArgsConstructor;

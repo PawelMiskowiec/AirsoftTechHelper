@@ -7,9 +7,11 @@ import com.example.airsofttechhelper.replica.domain.Owner;
 import com.example.airsofttechhelper.replica.domain.Replica;
 import com.example.airsofttechhelper.replica.domain.ReplicaStatus;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,6 +50,18 @@ public class ReplicaService implements ReplicaUseCase {
     public Replica addReplica(CreateReplicaCommand command) {
         Replica replica = toReplica(command);
         return repository.save(replica);
+    }
+
+    @Override
+    @Transactional
+    public UpdateStatusResponse updateReplicaStatus(UpdateStatusCommand command) {
+        return repository.findById(command.getReplicaId())
+                .map(replica -> {
+                    replica.updateStatus(command.getStatus());
+                    repository.save(replica);
+                    return UpdateStatusResponse.SUCCESS;
+                }).orElse( new UpdateStatusResponse(false,
+                        Collections.singletonList("Replica with id " + command.getReplicaId() + "not found")));
     }
 
     private Replica toReplica(CreateReplicaCommand command) {

@@ -1,8 +1,8 @@
 package com.example.airsofttechhelper.replica.domain;
 
 import com.example.airsofttechhelper.jpa.BaseEntity;
-import com.example.airsofttechhelper.part.domain.Part;
 import com.example.airsofttechhelper.part.domain.SinglePart;
+import com.example.airsofttechhelper.todo.domain.ToDo;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -46,6 +46,12 @@ public class Replica extends BaseEntity {
     @JoinColumn(name = "replica_id")
     private Set<ToDo> toDos = new HashSet<>();
 
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
     public Replica(String name, String description, String additionalEquipment, Owner owner) {
         this.name = name;
         this.description = description;
@@ -53,9 +59,7 @@ public class Replica extends BaseEntity {
         this.owner = owner;
     }
 
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
+    public void updateStatus(ReplicaStatus newStatus){
+        this.status = status.changeStatus(newStatus);
+    }
 }

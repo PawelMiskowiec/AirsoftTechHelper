@@ -1,20 +1,20 @@
 package com.example.airsofttechhelper.replica.application.port;
 
-import com.example.airsofttechhelper.replica.domain.Owner;
 import com.example.airsofttechhelper.replica.domain.Replica;
-import lombok.Builder;
-import lombok.Data;
+import com.example.airsofttechhelper.replica.domain.ReplicaStatus;
 import lombok.Value;
 
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Optional;
+
+import static java.util.Collections.emptyList;
 
 public interface ReplicaUseCase {
     List<Replica> findAll();
     List<Replica> findByStatus(String status);
     Optional<Replica> findOneById(Long id);
     Replica addReplica(CreateReplicaCommand command);
+    UpdateStatusResponse updateReplicaStatus(UpdateStatusCommand command);
     void deleteReplica(Long id);
 
     @Value
@@ -34,4 +34,18 @@ public interface ReplicaUseCase {
         String zipCode;
         String email;
     }
+
+    @Value
+    class UpdateStatusCommand{
+        Long replicaId;
+        ReplicaStatus status;
+    }
+
+    @Value
+    class UpdateStatusResponse{
+        public static UpdateStatusResponse SUCCESS = new UpdateStatusResponse(true, emptyList());
+        boolean success;
+        List<String> errors;
+    }
+
 }

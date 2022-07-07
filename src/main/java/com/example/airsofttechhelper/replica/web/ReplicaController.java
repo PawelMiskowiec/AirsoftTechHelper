@@ -2,13 +2,17 @@ package com.example.airsofttechhelper.replica.web;
 
 import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase;
 import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase.CreateOwnerCommand;
+import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase.UpdateStatusCommand;
+import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase.UpdateStatusResponse;
 import com.example.airsofttechhelper.replica.domain.Replica;
+import com.example.airsofttechhelper.replica.domain.ReplicaStatus;
 import com.example.airsofttechhelper.web.CreatedURI;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
@@ -16,20 +20,21 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.airsofttechhelper.replica.application.port.ReplicaUseCase.CreateReplicaCommand;
 
 @RestController
-@RequestMapping("/menu")
+@RequestMapping("/replica")
 @AllArgsConstructor
-public class MenuController {
+public class ReplicaController {
     private final ReplicaUseCase replicaService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<RestReplica> getReplicas(@RequestParam Optional<String> status){
+    public List<RestReplica> getAllReplicas(@RequestParam Optional<String> status){
         List<RestReplica> replicas;
         if(status.isPresent()){
             replicas = replicaService.findByStatus(status.get())
@@ -63,6 +68,27 @@ public class MenuController {
         return ResponseEntity.created(uri).build();
     }
 
+    @PatchMapping("/{id}/status")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void updateReplicaStatus(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body
+            ){
+        String newStatus = body.get("status");
+        ReplicaStatus replicaStatus = ReplicaStatus
+                .parseString(newStatus)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Uknown status: " + newStatus)
+                );
+        UpdateStatusCommand command = new UpdateStatusCommand(id, replicaStatus);
+        UpdateStatusResponse response = replicaService.updateReplicaStatus(command);
+        if(!response.isSuccess()){
+            String errorMessage = String.join(", ", response.getErrors());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
+        }
+    }
+
     @Data
     private static class RestReplicaCommand{
         @NotBlank(message = "Please provide a name")
@@ -84,22 +110,22 @@ public class MenuController {
 
     @Data
     static class RestOwnerCommand {
-        @NotBlank(message = "Please provide an Owner name")
+        @NotBlank(message = "Please provide an Owner's name")
         private String name;
 
-        @NotBlank(message = "Please provide an Owner phone number")
+        @NotBlank(message = "Please provide an Owner's phone number")
         private String phone;
 
-        @NotBlank(message = "Please provide an Owner street")
+        @NotBlank(message = "Please provide an Owner's street")
         private String street;
 
-        @NotBlank(message = "Please provide an Owner city")
+        @NotBlank(message = "Please provide an Owner's city")
         private String city;
 
-        @NotBlank(message = "Please provide an Owner zipCode")
+        @NotBlank(message = "Please provide an Owner's zipCode")
         private String zipCode;
 
-        @Email(message = "Please provide an Owner email")
+        @Email(message = "Please provide an Owner's email")
         private String email;
 
         CreateOwnerCommand toCreateOwnerCommand(){

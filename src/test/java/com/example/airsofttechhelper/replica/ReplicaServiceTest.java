@@ -1,11 +1,11 @@
 package com.example.airsofttechhelper.replica;
 
 import com.example.airsofttechhelper.replica.application.ReplicaService;
-import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase;
 import com.example.airsofttechhelper.replica.db.OwnerRepository;
 import com.example.airsofttechhelper.replica.db.ReplicaRepository;
 import com.example.airsofttechhelper.replica.domain.Owner;
 import com.example.airsofttechhelper.replica.domain.Replica;
+import com.example.airsofttechhelper.replica.domain.ReplicaStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import static com.example.airsofttechhelper.replica.application.port.ReplicaUseCase.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
@@ -48,6 +49,50 @@ public class ReplicaServiceTest {
         //then
         assertEquals(replica, replicaRepository.findById(replica.getId()).get());
 
+    }
+
+    @Test
+    public void userCanChangeReplicaStatusFromNewToInProgress(){
+        //given
+        Replica replica = givenReplica();
+        UpdateStatusCommand command = new UpdateStatusCommand(replica.getId(), ReplicaStatus.INPROGRESS);
+
+        //when
+        replicaService.updateReplicaStatus(command);
+
+        //then
+        assertEquals(ReplicaStatus.INPROGRESS, replicaRepository.findById(replica.getId()).get().getStatus());
+
+    }
+
+    @Test
+    public void userCannotChangeFinishedReplicaStatus(){
+        //given
+        Replica replica = givenReplica();
+        UpdateStatusCommand testingCommand = new UpdateStatusCommand(replica.getId(), ReplicaStatus.TESTING);
+        UpdateStatusCommand finishedCommand = new UpdateStatusCommand(replica.getId(), ReplicaStatus.FINISHED);
+
+        //when
+        replicaService.updateReplicaStatus(testingCommand);
+        replicaService.updateReplicaStatus(finishedCommand);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            replicaService.updateReplicaStatus(testingCommand);
+        });
+
+        //then
+        Assertions.assertTrue(exception.getMessage().contains("Unable to change the replica status from FINISHED to TESTING"));
+    }
+
+    private Replica givenReplica(){
+        Owner owner = givenOwner("Pawel");
+        CreateOwnerCommand ownerCommand = toCreateOwnerCommand(owner);
+        CreateReplicaCommand command = new CreateReplicaCommand(
+                "GG tr16 308 sr",
+                "this replica is supposed to be fully upgraded",
+                "3 mid-cap magazines",
+                ownerCommand
+        );
+        return replicaService.addReplica(command);
     }
 
     private CreateOwnerCommand toCreateOwnerCommand(Owner owner) {
