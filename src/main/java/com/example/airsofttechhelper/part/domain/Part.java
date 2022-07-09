@@ -26,13 +26,4 @@ public class Part extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private PartCategory category;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "part_id")
-    private Set<SinglePart> singleParts = new HashSet<>();
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
 }

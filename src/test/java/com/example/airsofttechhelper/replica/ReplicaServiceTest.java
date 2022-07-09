@@ -83,6 +83,23 @@ public class ReplicaServiceTest {
         Assertions.assertTrue(exception.getMessage().contains("Unable to change the replica status from FINISHED to TESTING"));
     }
 
+    @Test
+    public void userCannotChangeInProgressReplicaStatusToNew(){
+        //given
+        Replica replica = givenReplica();
+        UpdateStatusCommand newCommand = new UpdateStatusCommand(replica.getId(), ReplicaStatus.NEW);
+        UpdateStatusCommand inProgressCommand = new UpdateStatusCommand(replica.getId(), ReplicaStatus.INPROGRESS);
+
+        //when
+        replicaService.updateReplicaStatus(inProgressCommand);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            replicaService.updateReplicaStatus(newCommand);
+        });
+
+        //then
+        Assertions.assertTrue(exception.getMessage().contains("Unable to change the replica status from INPROGRESS to NEW"));
+    }
+
     private Replica givenReplica(){
         Owner owner = givenOwner("Pawel");
         CreateOwnerCommand ownerCommand = toCreateOwnerCommand(owner);

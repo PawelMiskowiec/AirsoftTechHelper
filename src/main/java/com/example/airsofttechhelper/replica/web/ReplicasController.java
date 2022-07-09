@@ -27,9 +27,9 @@ import java.util.stream.Collectors;
 import static com.example.airsofttechhelper.replica.application.port.ReplicaUseCase.CreateReplicaCommand;
 
 @RestController
-@RequestMapping("/replica")
+@RequestMapping("/replicas")
 @AllArgsConstructor
-public class ReplicaController {
+public class ReplicasController {
     private final ReplicaUseCase replicaService;
 
     @GetMapping
@@ -64,7 +64,7 @@ public class ReplicaController {
     @PostMapping
     public ResponseEntity<Object> addReplica(@Valid @RequestBody RestReplicaCommand command){
         Replica replica = replicaService.addReplica(command.toCreateCommand());
-        URI uri = new CreatedURI("/" + replica.getId().toString()).uri();
+        URI uri = new CreatedURI("/replicas/" + replica.getId().toString()).uri();
         return ResponseEntity.created(uri).build();
     }
 
@@ -87,6 +87,12 @@ public class ReplicaController {
             String errorMessage = String.join(", ", response.getErrors());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
         }
+    }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteReplica(@PathVariable Long id){
+        replicaService.deleteReplica(id);
     }
 
     @Data
