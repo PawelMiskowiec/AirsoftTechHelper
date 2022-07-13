@@ -38,7 +38,7 @@ public interface ReplicaUseCase {
     @Value
     class UpdateStatusCommand{
         Long replicaId;
-        ReplicaStatus status;
+        String replicaStatus;
     }
 
     @Value

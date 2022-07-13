@@ -32,13 +32,6 @@ public class ReplicaService implements ReplicaUseCase {
         return repository.findByStatusIsContaining(toReplicaStatus(status));
     }
 
-    private ReplicaStatus toReplicaStatus(String status){
-        return ReplicaStatus.parseString(status)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(status + " is not a valid replica status")
-                );
-    }
-
     @Override
     public Optional<Replica> findOneById(Long id) {
         return repository.findById(id);
@@ -56,11 +49,18 @@ public class ReplicaService implements ReplicaUseCase {
     public UpdateStatusResponse updateReplicaStatus(UpdateStatusCommand command) {
         return repository.findById(command.getReplicaId())
                 .map(replica -> {
-                    replica.updateStatus(command.getStatus());
+                    replica.updateStatus(toReplicaStatus(command.getReplicaStatus()));
                     repository.save(replica);
                     return UpdateStatusResponse.SUCCESS;
-                }).orElse( new UpdateStatusResponse(false,
+                }).orElse(new UpdateStatusResponse(false,
                         Collections.singletonList("Replica with id " + command.getReplicaId() + "not found")));
+    }
+
+    private ReplicaStatus toReplicaStatus(String status) {
+        return ReplicaStatus.parseString(status)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(status + " is not a valid replica status")
+                );
     }
 
     private Replica toReplica(CreateReplicaCommand command) {
@@ -77,7 +77,7 @@ public class ReplicaService implements ReplicaUseCase {
                 .orElse(ownerRepository.save(toOwner(ownerCommand)));
     }
 
-    private Owner toOwner(CreateOwnerCommand command){
+    private Owner toOwner(CreateOwnerCommand command) {
         return new Owner(
                 command.getName(),
                 command.getPhone(),
@@ -85,7 +85,7 @@ public class ReplicaService implements ReplicaUseCase {
                 command.getCity(),
                 command.getZipCode(),
                 command.getEmail()
-            );
+        );
     }
 
     @Override

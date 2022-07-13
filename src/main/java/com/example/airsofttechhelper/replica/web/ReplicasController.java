@@ -5,7 +5,6 @@ import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase.Cre
 import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase.UpdateStatusCommand;
 import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase.UpdateStatusResponse;
 import com.example.airsofttechhelper.replica.domain.Replica;
-import com.example.airsofttechhelper.replica.domain.ReplicaStatus;
 import com.example.airsofttechhelper.web.CreatedURI;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -58,7 +57,8 @@ public class ReplicasController {
     }
 
     private RestReplica toRestReplica(Replica replica) {
-        return new RestReplica(replica.getId(), replica.getName(), replica.getStatus(), replica.getCreatedAt(), replica.getOwner().getEmail());
+        return new RestReplica(replica.getId(), replica.getName(), replica.getStatus(),
+                replica.getCreatedAt(), replica.getOwner().getEmail());
     }
 
     @PostMapping
@@ -70,18 +70,9 @@ public class ReplicasController {
 
     @PatchMapping("/{id}/status")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void updateReplicaStatus(
-            @PathVariable Long id,
-            @RequestBody Map<String, String> body
-            ){
+    public void updateReplicaStatus(@PathVariable Long id, @RequestBody Map<String, String> body){
         String newStatus = body.get("status");
-        ReplicaStatus replicaStatus = ReplicaStatus
-                .parseString(newStatus)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "Uknown status: " + newStatus)
-                );
-        UpdateStatusCommand command = new UpdateStatusCommand(id, replicaStatus);
+        UpdateStatusCommand command = new UpdateStatusCommand(id, newStatus);
         UpdateStatusResponse response = replicaService.updateReplicaStatus(command);
         if(!response.isSuccess()){
             String errorMessage = String.join(", ", response.getErrors());

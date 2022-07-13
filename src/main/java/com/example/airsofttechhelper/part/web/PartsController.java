@@ -42,8 +42,7 @@ public class PartsController {
         if(part.isEmpty()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There is no part with id " + id);
         }
-        RestPart restPart = toRestPart(part.get());
-        return ResponseEntity.ok(restPart);
+        return ResponseEntity.ok(toRestPart(part.get()));
     }
 
     @PostMapping()
