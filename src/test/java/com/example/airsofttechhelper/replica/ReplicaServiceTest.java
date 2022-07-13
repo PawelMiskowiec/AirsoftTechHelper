@@ -1,6 +1,7 @@
 package com.example.airsofttechhelper.replica;
 
 import com.example.airsofttechhelper.replica.application.ReplicaService;
+import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase;
 import com.example.airsofttechhelper.replica.db.OwnerRepository;
 import com.example.airsofttechhelper.replica.db.ReplicaRepository;
 import com.example.airsofttechhelper.replica.domain.Owner;
@@ -34,8 +35,7 @@ public class ReplicaServiceTest {
     @Test
     public void userCanAddReplica(){
         //given
-        Owner owner = givenOwner("Pawel");
-        CreateOwnerCommand ownerCommand = toCreateOwnerCommand(owner);
+        CreateOwnerCommand ownerCommand = toCreateOwnerCommand("Pawel");
         CreateReplicaCommand command = new CreateReplicaCommand(
                 "GG tr16 308 sr",
                 "this replica is supposed to be fully upgraded",
@@ -54,8 +54,8 @@ public class ReplicaServiceTest {
     @Test
     public void userCanChangeReplicaStatusFromNewToInProgress(){
         //given
-        Replica replica = givenReplica();
-        UpdateStatusCommand command = new UpdateStatusCommand(replica.getId(), ReplicaStatus.INPROGRESS);
+        Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
+        UpdateStatusCommand command = new UpdateStatusCommand(replica.getId(), "INPROGRESS");
 
         //when
         replicaService.updateReplicaStatus(command);
@@ -68,9 +68,9 @@ public class ReplicaServiceTest {
     @Test
     public void userCannotChangeFinishedReplicaStatus(){
         //given
-        Replica replica = givenReplica();
-        UpdateStatusCommand testingCommand = new UpdateStatusCommand(replica.getId(), ReplicaStatus.TESTING);
-        UpdateStatusCommand finishedCommand = new UpdateStatusCommand(replica.getId(), ReplicaStatus.FINISHED);
+        Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
+        UpdateStatusCommand testingCommand = new UpdateStatusCommand(replica.getId(), "TESTING");
+        UpdateStatusCommand finishedCommand = new UpdateStatusCommand(replica.getId(), "FINISHED");
 
         //when
         replicaService.updateReplicaStatus(testingCommand);
@@ -86,9 +86,9 @@ public class ReplicaServiceTest {
     @Test
     public void userCannotChangeInProgressReplicaStatusToNew(){
         //given
-        Replica replica = givenReplica();
-        UpdateStatusCommand newCommand = new UpdateStatusCommand(replica.getId(), ReplicaStatus.NEW);
-        UpdateStatusCommand inProgressCommand = new UpdateStatusCommand(replica.getId(), ReplicaStatus.INPROGRESS);
+        Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
+        UpdateStatusCommand newCommand = new UpdateStatusCommand(replica.getId(), "NEW");
+        UpdateStatusCommand inProgressCommand = new UpdateStatusCommand(replica.getId(), "INPROGRESS");
 
         //when
         replicaService.updateReplicaStatus(inProgressCommand);
@@ -100,11 +100,10 @@ public class ReplicaServiceTest {
         Assertions.assertTrue(exception.getMessage().contains("Unable to change the replica status from INPROGRESS to NEW"));
     }
 
-    private Replica givenReplica(){
-        Owner owner = givenOwner("Pawel");
-        CreateOwnerCommand ownerCommand = toCreateOwnerCommand(owner);
-        CreateReplicaCommand command = new CreateReplicaCommand(
-                "GG tr16 308 sr",
+    private Replica givenReplica(String replicaName, String ownerEmail){
+        ReplicaUseCase.CreateOwnerCommand ownerCommand = toCreateOwnerCommand(ownerEmail);
+        ReplicaUseCase.CreateReplicaCommand command = new ReplicaUseCase.CreateReplicaCommand(
+                replicaName,
                 "this replica is supposed to be fully upgraded",
                 "3 mid-cap magazines",
                 ownerCommand
@@ -112,21 +111,11 @@ public class ReplicaServiceTest {
         return replicaService.addReplica(command);
     }
 
-    private CreateOwnerCommand toCreateOwnerCommand(Owner owner) {
-        return new CreateOwnerCommand(
-                owner.getName(),
-                owner.getPhone(),
-                owner.getStreet(),
-                owner.getCity(),
-                owner.getZipCode(),
-                owner.getEmail()
-            );
-    }
-
-
-    private Owner givenOwner(String name){
-        return ownerRepository.save(new Owner(name, "7123123", "example 12/3",
-                "City", "11-123", "owner@mail.com"));
+    private ReplicaUseCase.CreateOwnerCommand toCreateOwnerCommand(String email) {
+        return new ReplicaUseCase.CreateOwnerCommand(
+                "Pawel", "7123123", "example 12/3",
+                "City", "11-123", email
+        );
     }
 
 }

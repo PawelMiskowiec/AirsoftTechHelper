@@ -64,17 +64,18 @@ public class ReplicaService implements ReplicaUseCase {
     }
 
     private Replica toReplica(CreateReplicaCommand command) {
+        Owner owner = getOrCreateOwner(command.getOwnerCommand());
         return Replica.builder()
                 .name(command.getName())
                 .description(command.getDescription())
                 .additionalEquipment(command.getAdditionalEquipment())
-                .owner(getOrCreateOwner(command.getOwnerCommand()))
+                .owner(owner)
                 .build();
     }
 
     private Owner getOrCreateOwner(CreateOwnerCommand ownerCommand) {
-        return ownerRepository.findByEmailIgnoreCase(ownerCommand.getEmail())
-                .orElse(ownerRepository.save(toOwner(ownerCommand)));
+        return ownerRepository.findByEmail(ownerCommand.getEmail())
+                .orElse(toOwner(ownerCommand));
     }
 
     private Owner toOwner(CreateOwnerCommand command) {
