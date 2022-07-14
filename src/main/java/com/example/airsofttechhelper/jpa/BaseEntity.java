@@ -19,20 +19,21 @@ public class BaseEntity {
     @Id
     @GeneratedValue
     private Long id;
-    private String uuid = UUID.randomUUID().toString();
     @Version
     private long version;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        if (!(o instanceof BaseEntity)) return false;
+
         BaseEntity that = (BaseEntity) o;
-        return uuid != null && Objects.equals(uuid, that.uuid);
+
+        return id != null && id.equals(that.id);
     }
 
     @Override
     public int hashCode() {
-        return uuid.hashCode();
+        return getClass().hashCode();
     }
 }
