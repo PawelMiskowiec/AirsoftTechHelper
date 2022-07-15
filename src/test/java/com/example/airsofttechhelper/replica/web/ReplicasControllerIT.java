@@ -1,8 +1,12 @@
 package com.example.airsofttechhelper.replica.web;
 
+import com.example.airsofttechhelper.part.application.port.ReplicaPartUseCase;
+import com.example.airsofttechhelper.part.domain.ReplicaPart;
+import com.example.airsofttechhelper.part.web.ReplicaPartsController;
 import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase;
 import com.example.airsofttechhelper.replica.db.OwnerJpaRepository;
 import com.example.airsofttechhelper.replica.domain.Replica;
+import com.example.airsofttechhelper.todo.application.port.ToDoUseCase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +30,15 @@ class ReplicasControllerIT {
     @Autowired
     ReplicasController replicasController;
 
+    @Autowired
+    ReplicaPartsController replicaPartsController;
+
+    @Autowired
+    ReplicaPartUseCase replicaPartService;
+
+    @Autowired
+    ToDoUseCase toDoService;
+
 
     @Test
     public void  getAllReplicas(){
@@ -38,6 +51,29 @@ class ReplicasControllerIT {
 
         //then
         Assertions.assertEquals(all.size(), 2);
+    }
+
+    @Test
+    public void getFullReplicaWithReplicaTestParts(){
+        Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
+        ReplicaPartUseCase.CreateReplicaPartCommand command =
+                new ReplicaPartUseCase.CreateReplicaPartCommand(replica.getId(), Optional.empty(), "First Part",
+                        "HopUp", "Very good part");
+        ReplicaPartUseCase.CreateReplicaPartCommand command2 =
+                new ReplicaPartUseCase.CreateReplicaPartCommand(replica.getId(), Optional.empty(), "Second Part",
+                        "misc", "Very good part");
+        ReplicaPart replicaPart = replicaPartService.addReplicaPart(command);
+        ReplicaPart replicaPart2 = replicaPartService.addReplicaPart(command2);
+
+        toDoService.addToDo("jakiesTam", "Zawartosc", replica.getId());
+
+
+
+        replicaService.findOneByIdEager(replica.getId()).get()
+                .getReplicaParts().forEach(replicaPart1 -> System.out.println(replicaPart1.getPart().getName()));
+        System.out.println(replicaPart.hashCode() == replicaPart2.hashCode());
+
+
     }
 
     private Replica givenReplica(String replicaName, String ownerEmail){

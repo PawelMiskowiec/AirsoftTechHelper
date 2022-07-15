@@ -38,12 +38,10 @@ public class Replica extends BaseEntity {
     @JoinColumn(name = "owner_id")
     private Owner owner;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "replica_id")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "replica", orphanRemoval = true)
     private Set<ReplicaPart> replicaParts = new HashSet<>(); //ToDo - Test how hashSets are working with new HashCode impl
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "replica_id")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "replica", orphanRemoval = true)
     private Set<ToDo> toDos = new HashSet<>();
 
     @CreatedDate
@@ -59,6 +57,9 @@ public class Replica extends BaseEntity {
         this.owner = owner;
     }
 
+    public void addReplicaPart(ReplicaPart replicaPart){
+        replicaParts.add(replicaPart);
+    }
 
     public void updateStatus(ReplicaStatus newStatus){
         this.status = status.changeStatus(newStatus);

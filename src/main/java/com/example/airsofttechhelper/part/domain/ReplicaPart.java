@@ -25,11 +25,9 @@ public class ReplicaPart extends BaseEntity {
     private String notes;
 
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinColumn(name = "part_id")
     private Part part;
 
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "replica_id")
     private Replica replica;
 
     public ReplicaPart(String notes, Part part, Replica replica) {

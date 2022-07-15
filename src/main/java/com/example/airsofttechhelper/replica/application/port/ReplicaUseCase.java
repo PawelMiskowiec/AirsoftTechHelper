@@ -13,6 +13,7 @@ public interface ReplicaUseCase {
     List<Replica> findAll();
     List<Replica> findByStatus(String status);
     Optional<Replica> findOneById(Long id);
+    Optional<Replica> findOneByIdEager(Long id);
     Replica addReplica(CreateReplicaCommand command);
     UpdateStatusResponse updateReplicaStatus(UpdateStatusCommand command);
     void deleteReplica(Long id);

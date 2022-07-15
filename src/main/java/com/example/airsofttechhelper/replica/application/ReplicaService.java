@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class ReplicaService implements ReplicaUseCase {
 
     private final ReplicaJpaRepository repository;
@@ -38,14 +39,17 @@ public class ReplicaService implements ReplicaUseCase {
     }
 
     @Override
-    @Transactional
+    public Optional<Replica> findOneByIdEager(Long id) {
+        return repository.findOneByIdEager(id);
+    }
+
+    @Override
     public Replica addReplica(CreateReplicaCommand command) {
         Replica replica = toReplica(command);
         return repository.save(replica);
     }
 
     @Override
-    @Transactional
     public UpdateStatusResponse updateReplicaStatus(UpdateStatusCommand command) {
         return repository.findById(command.getReplicaId())
                 .map(replica -> {
