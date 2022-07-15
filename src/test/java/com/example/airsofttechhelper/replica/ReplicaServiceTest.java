@@ -2,9 +2,8 @@ package com.example.airsofttechhelper.replica;
 
 import com.example.airsofttechhelper.replica.application.ReplicaService;
 import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase;
-import com.example.airsofttechhelper.replica.db.OwnerRepository;
-import com.example.airsofttechhelper.replica.db.ReplicaRepository;
-import com.example.airsofttechhelper.replica.domain.Owner;
+import com.example.airsofttechhelper.replica.db.OwnerJpaRepository;
+import com.example.airsofttechhelper.replica.db.ReplicaJpaRepository;
 import com.example.airsofttechhelper.replica.domain.Replica;
 import com.example.airsofttechhelper.replica.domain.ReplicaStatus;
 import org.junit.jupiter.api.Assertions;
@@ -13,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-
-import javax.transaction.Transactional;
 
 import static com.example.airsofttechhelper.replica.application.port.ReplicaUseCase.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,10 +23,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ReplicaServiceTest {
 
     @Autowired
-    ReplicaRepository replicaRepository;
+    ReplicaJpaRepository replicaJpaRepository;
 
     @Autowired
-    OwnerRepository ownerRepository;
+    OwnerJpaRepository ownerJpaRepository;
 
     @Autowired
     ReplicaService replicaService;
@@ -49,7 +46,7 @@ public class ReplicaServiceTest {
         Replica replica = replicaService.addReplica(command);
 
         //then
-        assertEquals(replica, replicaRepository.findById(replica.getId()).get());
+        assertEquals(replica, replicaJpaRepository.findById(replica.getId()).get());
 
     }
 
@@ -63,7 +60,7 @@ public class ReplicaServiceTest {
         replicaService.updateReplicaStatus(command);
 
         //then
-        assertEquals(ReplicaStatus.INPROGRESS, replicaRepository.findById(replica.getId()).get().getStatus());
+        assertEquals(ReplicaStatus.INPROGRESS, replicaJpaRepository.findById(replica.getId()).get().getStatus());
 
     }
 

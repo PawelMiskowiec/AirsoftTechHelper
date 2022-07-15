@@ -33,8 +33,8 @@ public class ReplicasController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<RestReplica> getAllReplicas(@RequestParam Optional<String> status){
-        List<RestReplica> replicas;
+    public List<RestMinReplica> getAllReplicas(@RequestParam Optional<String> status){
+        List<RestMinReplica> replicas;
         if(status.isPresent()){
             replicas = replicaService.findByStatus(status.get())
                     .stream()
@@ -50,14 +50,16 @@ public class ReplicasController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RestReplica> getReplicaById(@PathVariable Long id){
+    public ResponseEntity<RestMinReplica> getReplicaById(@PathVariable Long id){
         return replicaService.findOneById(id)
                 .map(replica -> ResponseEntity.ok(toRestReplica(replica)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    private RestReplica toRestReplica(Replica replica) {
-        return new RestReplica(replica.getId(), replica.getName(), replica.getStatus(),
+
+
+    private RestMinReplica toRestReplica(Replica replica) {
+        return new RestMinReplica(replica.getId(), replica.getName(), replica.getStatus(),
                 replica.getCreatedAt(), replica.getOwner().getEmail());
     }
 

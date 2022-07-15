@@ -1,8 +1,7 @@
 package com.example.airsofttechhelper.replica.web;
 
 import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase;
-import com.example.airsofttechhelper.replica.db.OwnerRepository;
-import com.example.airsofttechhelper.replica.domain.Owner;
+import com.example.airsofttechhelper.replica.db.OwnerJpaRepository;
 import com.example.airsofttechhelper.replica.domain.Replica;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,11 +10,8 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
@@ -25,7 +21,7 @@ class ReplicasControllerIT {
     ReplicaUseCase replicaService;
 
     @Autowired
-    OwnerRepository ownerRepository;
+    OwnerJpaRepository ownerJpaRepository;
 
     @Autowired
     ReplicasController replicasController;
@@ -38,7 +34,7 @@ class ReplicasControllerIT {
         Replica replica2 = givenReplica("EA m4", "pawel@miskowiec.com");
 
         //when
-        List<RestReplica> all = replicasController.getAllReplicas(Optional.empty());
+        List<RestMinReplica> all = replicasController.getAllReplicas(Optional.empty());
 
         //then
         Assertions.assertEquals(all.size(), 2);

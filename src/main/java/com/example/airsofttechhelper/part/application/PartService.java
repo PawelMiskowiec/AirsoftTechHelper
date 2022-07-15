@@ -1,7 +1,7 @@
 package com.example.airsofttechhelper.part.application;
 
 import com.example.airsofttechhelper.part.application.port.PartUseCase;
-import com.example.airsofttechhelper.part.db.PartRepository;
+import com.example.airsofttechhelper.part.db.PartJpaRepository;
 import com.example.airsofttechhelper.part.domain.Part;
 import com.example.airsofttechhelper.part.domain.PartCategory;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 
 @Service
@@ -18,7 +17,7 @@ import java.util.Set;
 @Transactional
 @AllArgsConstructor
 public class PartService implements PartUseCase {
-    private final PartRepository repository;
+    private final PartJpaRepository repository;
 
     @Override
     public List<Part> findAll() {

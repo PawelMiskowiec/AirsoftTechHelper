@@ -6,7 +6,7 @@ import lombok.Value;
 import java.time.LocalDateTime;
 
 @Value
-public class RestReplica {
+public class RestMinReplica {
     Long id;
     String name;
     ReplicaStatus status;

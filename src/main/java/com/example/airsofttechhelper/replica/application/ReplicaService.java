@@ -1,8 +1,8 @@
 package com.example.airsofttechhelper.replica.application;
 
 import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase;
-import com.example.airsofttechhelper.replica.db.OwnerRepository;
-import com.example.airsofttechhelper.replica.db.ReplicaRepository;
+import com.example.airsofttechhelper.replica.db.OwnerJpaRepository;
+import com.example.airsofttechhelper.replica.db.ReplicaJpaRepository;
 import com.example.airsofttechhelper.replica.domain.Owner;
 import com.example.airsofttechhelper.replica.domain.Replica;
 import com.example.airsofttechhelper.replica.domain.ReplicaStatus;
@@ -18,9 +18,9 @@ import java.util.Optional;
 @AllArgsConstructor
 public class ReplicaService implements ReplicaUseCase {
 
-    private final ReplicaRepository repository;
+    private final ReplicaJpaRepository repository;
 
-    private final OwnerRepository ownerRepository;
+    private final OwnerJpaRepository ownerJpaRepository;
 
     @Override
     public List<Replica> findAll() {
@@ -74,7 +74,7 @@ public class ReplicaService implements ReplicaUseCase {
     }
 
     private Owner getOrCreateOwner(CreateOwnerCommand ownerCommand) {
-        return ownerRepository.findByEmail(ownerCommand.getEmail())
+        return ownerJpaRepository.findByEmail(ownerCommand.getEmail())
                 .orElse(toOwner(ownerCommand));
     }
 

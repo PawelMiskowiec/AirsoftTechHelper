@@ -1,7 +1,6 @@
 package com.example.airsofttechhelper.replica.domain;
 
 import com.example.airsofttechhelper.jpa.BaseEntity;
-import com.example.airsofttechhelper.part.domain.SinglePart;
 import com.example.airsofttechhelper.todo.domain.ToDo;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -40,7 +39,7 @@ public class Replica extends BaseEntity {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "replica_id")
-    private Set<SinglePart> SingleParts = new HashSet<>();
+    private Set<ReplicaPart> replicaParts = new HashSet<>(); //ToDo - Test how hashSets are working with new HashCode impl
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "replica_id")
@@ -58,6 +57,7 @@ public class Replica extends BaseEntity {
         this.additionalEquipment = additionalEquipment;
         this.owner = owner;
     }
+
 
     public void updateStatus(ReplicaStatus newStatus){
         this.status = status.changeStatus(newStatus);
