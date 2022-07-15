@@ -1,7 +1,7 @@
-package com.example.airsofttechhelper.replica.application.port;
+package com.example.airsofttechhelper.part.application.port;
 
 import com.example.airsofttechhelper.part.application.port.PartUseCase;
-import com.example.airsofttechhelper.replica.domain.ReplicaPart;
+import com.example.airsofttechhelper.part.domain.ReplicaPart;
 import lombok.Value;
 
 import java.util.Collections;
@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReplicaPartUseCase {
+    List<ReplicaPart> findAll();
     List<ReplicaPart> findAllByReplicaId(Long replicaId);
     Optional<ReplicaPart> findOneById(Long id);
     ReplicaPart addReplicaPart(CreateReplicaPartCommand command);
@@ -25,13 +26,13 @@ public interface ReplicaPartUseCase {
     @Value
     class CreateReplicaPartCommand{
         Long replicaId;
-        Long partId;
+        Optional<Long> partId;
         String name;
         String category;
         String notes;
 
-        public PartUseCase.CreatePartCommand toCreatePartCommand() {
-            return new PartUseCase.CreatePartCommand(name, category);
+        public PartUseCase.CreatePartCommand toCreatePartCommand(String partName, String partCategory) {
+            return new PartUseCase.CreatePartCommand(partName, partCategory);
         }
     }
 }

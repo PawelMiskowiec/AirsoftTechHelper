@@ -1,7 +1,8 @@
-package com.example.airsofttechhelper.replica.domain;
+package com.example.airsofttechhelper.part.domain;
 
 import com.example.airsofttechhelper.jpa.BaseEntity;
 import com.example.airsofttechhelper.part.domain.Part;
+import com.example.airsofttechhelper.replica.domain.Replica;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +28,7 @@ public class ReplicaPart extends BaseEntity {
     @JoinColumn(name = "part_id")
     private Part part;
 
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinColumn(name = "replica_id")
     private Replica replica;
 

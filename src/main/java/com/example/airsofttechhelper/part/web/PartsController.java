@@ -53,7 +53,7 @@ public class PartsController {
     }
 
     private RestPart toRestPart(Part part) {
-        return new RestPart(part.getName(), part.getCategory().name());
+        return new RestPart(part.getId(), part.getName(), part.getCategory().name());
     }
 
     @DeleteMapping("/{id}")

@@ -1,4 +1,4 @@
-package com.example.airsofttechhelper.replica.web;
+package com.example.airsofttechhelper.part.web;
 
 import com.example.airsofttechhelper.part.domain.PartCategory;
 import lombok.Value;
