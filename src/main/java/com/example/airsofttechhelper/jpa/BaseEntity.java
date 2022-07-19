@@ -3,14 +3,11 @@ package com.example.airsofttechhelper.jpa;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.Hibernate;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
-import java.util.Objects;
-import java.util.UUID;
 
 @MappedSuperclass
 @Getter
@@ -34,6 +31,6 @@ public class BaseEntity {
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return getClass().hashCode(); //I know
     }
 }

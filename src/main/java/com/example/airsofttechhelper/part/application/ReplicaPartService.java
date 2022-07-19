@@ -4,6 +4,7 @@ import com.example.airsofttechhelper.part.application.port.PartUseCase;
 import com.example.airsofttechhelper.part.db.PartJpaRepository;
 import com.example.airsofttechhelper.part.domain.Part;
 import com.example.airsofttechhelper.part.application.port.ReplicaPartUseCase;
+import com.example.airsofttechhelper.part.domain.PartCategory;
 import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase;
 import com.example.airsofttechhelper.replica.db.ReplicaJpaRepository;
 import com.example.airsofttechhelper.part.db.ReplicaPartJpaRepository;
@@ -21,8 +22,6 @@ import java.util.Optional;
 @Transactional
 public class ReplicaPartService implements ReplicaPartUseCase {
 
-    private final PartUseCase partService;
-    private final ReplicaUseCase replicaService;
     private final ReplicaPartJpaRepository repository;
     private final PartJpaRepository partJpaRepository;
     private final ReplicaJpaRepository replicaJpaRepository;
@@ -60,7 +59,8 @@ public class ReplicaPartService implements ReplicaPartUseCase {
                     .findById(command.getPartId().get())
                     .orElseThrow(() -> new IllegalArgumentException("Part with id " + command.getPartId().get() + " not found"));
         }else {
-            part = partService.addPart(command.toCreatePartCommand(command.getName(), command.getCategory()));
+            part = new Part(command.getName(), PartCategory.parseString(command.getCategory())
+                    .orElseThrow(() -> new IllegalArgumentException("Category " + command.getCategory() + " not found")));
         }
         return part;
     }

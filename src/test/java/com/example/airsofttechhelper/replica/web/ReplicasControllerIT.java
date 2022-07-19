@@ -54,7 +54,7 @@ class ReplicasControllerIT {
     }
 
     @Test
-    public void getFullReplicaWithReplicaTestParts(){
+    public void getFullReplicaWithReplicaPartsTest(){
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
         ReplicaPartUseCase.CreateReplicaPartCommand command =
                 new ReplicaPartUseCase.CreateReplicaPartCommand(replica.getId(), Optional.empty(), "First Part",
@@ -65,13 +65,12 @@ class ReplicasControllerIT {
         ReplicaPart replicaPart = replicaPartService.addReplicaPart(command);
         ReplicaPart replicaPart2 = replicaPartService.addReplicaPart(command2);
 
-        toDoService.addToDo("jakiesTam", "Zawartosc", replica.getId());
-
-
+        toDoService.addToDo("ExampleToDo", "Example todoContent", replica.getId());
 
         replicaService.findOneByIdEager(replica.getId()).get()
                 .getReplicaParts().forEach(replicaPart1 -> System.out.println(replicaPart1.getPart().getName()));
         System.out.println(replicaPart.hashCode() == replicaPart2.hashCode());
+        System.out.println(replicaPart.equals(replicaPart2));
 
 
     }
