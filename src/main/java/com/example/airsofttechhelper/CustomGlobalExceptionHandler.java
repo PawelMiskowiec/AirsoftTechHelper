@@ -1,5 +1,6 @@
 package com.example.airsofttechhelper;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -29,7 +30,6 @@ public class CustomGlobalExceptionHandler {
                 .toList();
         return handleError(HttpStatus.BAD_REQUEST, errors);
     }
-
 
     private ResponseEntity<Object> handleError(HttpStatus status, List<String> errors) {
         Map<String, Object> body = new LinkedHashMap<>();

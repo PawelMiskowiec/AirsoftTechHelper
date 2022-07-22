@@ -1,6 +1,5 @@
 package com.example.airsofttechhelper.todo.application;
 
-import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase;
 import com.example.airsofttechhelper.replica.db.ReplicaJpaRepository;
 import com.example.airsofttechhelper.replica.domain.Replica;
 import com.example.airsofttechhelper.todo.application.port.ToDoUseCase;

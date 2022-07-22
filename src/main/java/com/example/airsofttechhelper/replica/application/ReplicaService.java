@@ -1,18 +1,19 @@
 package com.example.airsofttechhelper.replica.application;
 
+import com.example.airsofttechhelper.part.domain.ReplicaPart;
+import com.example.airsofttechhelper.part.web.RestReplicaPart;
 import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase;
-import com.example.airsofttechhelper.replica.db.OwnerJpaRepository;
 import com.example.airsofttechhelper.replica.db.ReplicaJpaRepository;
-import com.example.airsofttechhelper.replica.domain.Owner;
 import com.example.airsofttechhelper.replica.domain.Replica;
-import com.example.airsofttechhelper.replica.domain.ReplicaStatus;
+import com.example.airsofttechhelper.replica.web.RestReplica;
+import com.example.airsofttechhelper.todo.domain.ToDo;
+import com.example.airsofttechhelper.todo.web.RestToDo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -21,80 +22,51 @@ public class ReplicaService implements ReplicaUseCase {
 
     private final ReplicaJpaRepository repository;
 
-    private final OwnerJpaRepository ownerJpaRepository;
-
     @Override
-    public List<Replica> findAll() {
-        return repository.findAll();
+    public RestReplica findById(Long id) {
+        return repository.findOneByIdEager(id)
+                .map(this::toRestReplica)
+                .orElseThrow(() -> new IllegalArgumentException("Cannot find replica with id " + id));
     }
 
-    @Override
-    public List<Replica> findByStatus(String status) {
-        return repository.findByStatusIsContaining(toReplicaStatus(status));
-    }
-
-    @Override
-    public Optional<Replica> findOneById(Long id) {
-        return repository.findById(id);
-    }
-
-    @Override
-    public Optional<Replica> findOneByIdEager(Long id) {
-        return repository.findOneByIdEager(id);
-    }
-
-    @Override
-    public Replica addReplica(CreateReplicaCommand command) {
-        Replica replica = toReplica(command);
-        return repository.save(replica);
-    }
-
-    @Override
-    public UpdateStatusResponse updateReplicaStatus(UpdateStatusCommand command) {
-        return repository.findById(command.getReplicaId())
-                .map(replica -> {
-                    replica.updateStatus(toReplicaStatus(command.getReplicaStatus()));
-                    repository.save(replica);
-                    return UpdateStatusResponse.SUCCESS;
-                }).orElse(new UpdateStatusResponse(false,
-                        Collections.singletonList("Replica with id " + command.getReplicaId() + "not found")));
-    }
-
-    private ReplicaStatus toReplicaStatus(String status) {
-        return ReplicaStatus.parseString(status)
-                .orElseThrow(() ->
-                        new IllegalArgumentException(status + " is not a valid replica status")
-                );
-    }
-
-    private Replica toReplica(CreateReplicaCommand command) {
-        Owner owner = getOrCreateOwner(command.getOwnerCommand());
-        return Replica.builder()
-                .name(command.getName())
-                .description(command.getDescription())
-                .additionalEquipment(command.getAdditionalEquipment())
-                .owner(owner)
-                .build();
-    }
-
-    private Owner getOrCreateOwner(CreateOwnerCommand ownerCommand) {
-        return ownerJpaRepository.findByEmail(ownerCommand.getEmail())
-                .orElse(toOwner(ownerCommand));
-    }
-
-    private Owner toOwner(CreateOwnerCommand command) {
-        return new Owner(
-                command.getName(),
-                command.getPhone(),
-                command.getStreet(),
-                command.getCity(),
-                command.getZipCode(),
-                command.getEmail()
+    private RestReplica toRestReplica(Replica replica) {
+        return new RestReplica(
+                replica.getId(),
+                replica.getName(),
+                replica.getAdditionalEquipment(),
+                replica.getOwner().getName(),
+                replica.getCreatedAt(),
+                replica.getUpdatedAt(),
+                toRestReplicaParts(replica.getReplicaParts(), replica.getId()),
+                toRestToDo(replica.getToDos())
         );
+    }
+
+    private Set<RestToDo> toRestToDo(Set<ToDo> toDos) {
+        return toDos.stream()
+                .map(toDo -> new RestToDo(toDo.getTitle(), toDo.getContent()))
+                .collect(Collectors.toSet());
+    }
+
+    private Set<RestReplicaPart> toRestReplicaParts(Set<ReplicaPart> replicaParts, Long replicaId) {
+        return replicaParts.stream()
+                .map(replicaPart -> new RestReplicaPart(
+                        replicaPart.getPart().getName(),
+                        replicaPart.getPart().getCategory(),
+                        replicaPart.getPart().getId(),
+                        replicaId,
+                        replicaPart.getNotes(),
+                        replicaPart.getCreatedAt()
+                )).collect(Collectors.toSet());
+    }
+
+    @Override
+    public void updateReplica() {
+
     }
 
     @Override
     public void deleteReplica(Long id) {
-        repository.deleteById(id);
+
     }
 }

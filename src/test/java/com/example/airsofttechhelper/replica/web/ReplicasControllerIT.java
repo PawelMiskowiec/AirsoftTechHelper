@@ -3,8 +3,7 @@ package com.example.airsofttechhelper.replica.web;
 import com.example.airsofttechhelper.part.application.port.ReplicaPartUseCase;
 import com.example.airsofttechhelper.part.domain.ReplicaPart;
 import com.example.airsofttechhelper.part.web.ReplicaPartsController;
-import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase;
-import com.example.airsofttechhelper.replica.db.OwnerJpaRepository;
+import com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase;
 import com.example.airsofttechhelper.replica.domain.Replica;
 import com.example.airsofttechhelper.todo.application.port.ToDoUseCase;
 import org.junit.jupiter.api.Assertions;
@@ -22,7 +21,7 @@ import java.util.Optional;
 @AutoConfigureTestDatabase
 class ReplicasControllerIT {
     @Autowired
-    ReplicaUseCase replicaService;
+    ReplicaListUseCase replicaService;
 
     @Autowired
     ReplicasController replicasController;
@@ -37,52 +36,26 @@ class ReplicasControllerIT {
     ToDoUseCase toDoService;
 
 
+    //Use of transactional resulted in non-deterministic test execution as the database had some additional replica
+    //from method using dirtiesContext
     @Test
-    @Transactional
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     public void  getAllReplicas(){
         //given
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
         Replica replica2 = givenReplica("EA m4", "pawel@miskowiec.com");
 
         //when
-        List<RestMinReplica> all = replicasController.getAllReplicas(Optional.empty());
+        List<RestListReplica> all = replicasController.getAllReplicas(Optional.empty());
 
         //then
-        Assertions.assertEquals(all.size(), 2);
+        Assertions.assertEquals(2, all.size());
     }
 
-    @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
-    public void getFullReplicaTest(){ //Just playing with hql, lazy initialization, hashCode & equals
-        Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
-
-        ReplicaPartUseCase.CreateReplicaPartCommand command =
-                new ReplicaPartUseCase.CreateReplicaPartCommand(replica.getId(), Optional.empty(), "First Part",
-                        "HopUp", "Very good part");
-        ReplicaPartUseCase.CreateReplicaPartCommand command2 =
-                new ReplicaPartUseCase.CreateReplicaPartCommand(replica.getId(), Optional.empty(), "Second Part",
-                        "misc", "Very good part");
-
-        System.out.println("\nAdding first part \n");
-        ReplicaPart replicaPart = replicaPartService.addReplicaPart(command);
-        System.out.println("\nAdding second part \n");
-        ReplicaPart replicaPart2 = replicaPartService.addReplicaPart(command2);
-        System.out.println("\nAdding todo \n");
-        toDoService.addToDo("ExampleToDo", "Example todoContent", replica.getId());
-
-        System.out.println("\n before printing parts \n");
-
-        replicaService.findOneByIdEager(replica.getId()).get() //this method manages to fetch all associated entities with one query
-                .getReplicaParts().forEach(replicaPart1 -> System.out.println(replicaPart1.getPart().getName()));
-        System.out.println(replicaPart.hashCode() == replicaPart2.hashCode());
-        System.out.println(replicaPart.equals(replicaPart2));
-
-
-    }
 
     private Replica givenReplica(String replicaName, String ownerEmail){
-        ReplicaUseCase.CreateOwnerCommand ownerCommand = toCreateOwnerCommand(ownerEmail);
-        ReplicaUseCase.CreateReplicaCommand command = new ReplicaUseCase.CreateReplicaCommand(
+        ReplicaListUseCase.CreateOwnerCommand ownerCommand = toCreateOwnerCommand(ownerEmail);
+        ReplicaListUseCase.CreateReplicaCommand command = new ReplicaListUseCase.CreateReplicaCommand(
                 replicaName,
                 "this replica is supposed to be fully upgraded",
                 "3 mid-cap magazines",
@@ -91,8 +64,8 @@ class ReplicasControllerIT {
         return replicaService.addReplica(command);
     }
 
-    private ReplicaUseCase.CreateOwnerCommand toCreateOwnerCommand(String email) {
-        return new ReplicaUseCase.CreateOwnerCommand(
+    private ReplicaListUseCase.CreateOwnerCommand toCreateOwnerCommand(String email) {
+        return new ReplicaListUseCase.CreateOwnerCommand(
                 "Pawel", "7123123", "example 12/3",
                 "City", "11-123", email
         );

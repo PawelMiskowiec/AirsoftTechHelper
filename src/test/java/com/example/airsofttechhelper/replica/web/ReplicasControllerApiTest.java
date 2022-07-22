@@ -36,18 +36,18 @@ class ReplicasControllerApiTest {
     @Test
     void getAllReplicas() {
         //given
-        RestMinReplica replica = new RestMinReplica(1L, "gg tr16", ReplicaStatus.TESTING, LocalDateTime.now(),
+        RestListReplica replica = new RestListReplica(1L, "gg tr16", ReplicaStatus.TESTING, LocalDateTime.now(),
                 "owner@gmail.com");
-        RestMinReplica replica2 = new RestMinReplica(1L, "ea m4", ReplicaStatus.INPROGRESS, LocalDateTime.now(),
+        RestListReplica replica2 = new RestListReplica(1L, "ea m4", ReplicaStatus.INPROGRESS, LocalDateTime.now(),
                 "owner@gmail.com");
 
         Mockito.when(replicasController.getAllReplicas(Optional.empty())).thenReturn(List.of(replica, replica2));
-        ParameterizedTypeReference<List<RestMinReplica>> typeReference = new ParameterizedTypeReference<>(){};
+        ParameterizedTypeReference<List<RestListReplica>> typeReference = new ParameterizedTypeReference<>(){};
 
         //when
-        String url = "http://localhost:" + port + "/replicas";
+        String url = "http://localhost:" + port + "/replicas-list";
         RequestEntity<?> request = RequestEntity.get(URI.create(url)).build();
-        List<RestMinReplica> response = restTemplate.exchange(request, typeReference).getBody();
+        List<RestListReplica> response = restTemplate.exchange(request, typeReference).getBody();
 
         //then
         Assertions.assertEquals(2, response.size());
@@ -56,14 +56,14 @@ class ReplicasControllerApiTest {
     @Test
     void getReplicaById(){
         //given
-        RestMinReplica replica = new RestMinReplica(1L, "gg tr16", ReplicaStatus.TESTING, LocalDateTime.now(),
+        RestListReplica replica = new RestListReplica(1L, "gg tr16", ReplicaStatus.TESTING, LocalDateTime.now(),
                 "owner@gmail.com");
         Mockito.when(replicasController.getReplicaById(1L)).thenReturn(ResponseEntity.ok(replica));
 
         //when
-        String url = "http://localhost:" + port + "/replicas/1";
+        String url = "http://localhost:" + port + "/replicas-list/1";
         RequestEntity<?> request = RequestEntity.get(url).build();
-        ResponseEntity<RestMinReplica> response = restTemplate.exchange(request, RestMinReplica.class);
+        ResponseEntity<RestListReplica> response = restTemplate.exchange(request, RestListReplica.class);
 
         //then
         Assertions.assertEquals(HttpStatus.OK.toString(), response.getStatusCode().toString());

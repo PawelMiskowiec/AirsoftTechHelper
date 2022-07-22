@@ -1,10 +1,9 @@
 package com.example.airsofttechhelper.replica;
 
-import com.example.airsofttechhelper.replica.application.ReplicaService;
-import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase;
+import com.example.airsofttechhelper.replica.application.ReplicaListService;
+import com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase;
 import com.example.airsofttechhelper.replica.db.OwnerJpaRepository;
 import com.example.airsofttechhelper.replica.db.ReplicaJpaRepository;
-import com.example.airsofttechhelper.replica.domain.Owner;
 import com.example.airsofttechhelper.replica.domain.Replica;
 import com.example.airsofttechhelper.replica.domain.ReplicaStatus;
 import org.junit.jupiter.api.Assertions;
@@ -14,16 +13,14 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
-import javax.transaction.Transactional;
-
-import static com.example.airsofttechhelper.replica.application.port.ReplicaUseCase.*;
+import static com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ReplicaServiceTest {
+public class ReplicaListServiceTest {
 
     @Autowired
     ReplicaJpaRepository replicaJpaRepository;
@@ -32,7 +29,7 @@ public class ReplicaServiceTest {
     OwnerJpaRepository ownerJpaRepository;
 
     @Autowired
-    ReplicaService replicaService;
+    ReplicaListService replicaListService;
 
     @Test
     public void userCanAddReplica(){
@@ -46,7 +43,7 @@ public class ReplicaServiceTest {
                 );
 
         //when
-        Replica replica = replicaService.addReplica(command);
+        Replica replica = replicaListService.addReplica(command);
 
         //then
         assertEquals(replica, replicaJpaRepository.findById(replica.getId()).get());
@@ -60,7 +57,7 @@ public class ReplicaServiceTest {
         UpdateStatusCommand command = new UpdateStatusCommand(replica.getId(), "INPROGRESS");
 
         //when
-        replicaService.updateReplicaStatus(command);
+        replicaListService.updateReplicaStatus(command);
 
         //then
         assertEquals(ReplicaStatus.INPROGRESS, replicaJpaRepository.findById(replica.getId()).get().getStatus());
@@ -75,10 +72,10 @@ public class ReplicaServiceTest {
         UpdateStatusCommand finishedCommand = new UpdateStatusCommand(replica.getId(), "FINISHED");
 
         //when
-        replicaService.updateReplicaStatus(testingCommand);
-        replicaService.updateReplicaStatus(finishedCommand);
+        replicaListService.updateReplicaStatus(testingCommand);
+        replicaListService.updateReplicaStatus(finishedCommand);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            replicaService.updateReplicaStatus(testingCommand);
+            replicaListService.updateReplicaStatus(testingCommand);
         });
 
         //then
@@ -93,9 +90,9 @@ public class ReplicaServiceTest {
         UpdateStatusCommand inProgressCommand = new UpdateStatusCommand(replica.getId(), "INPROGRESS");
 
         //when
-        replicaService.updateReplicaStatus(inProgressCommand);
+        replicaListService.updateReplicaStatus(inProgressCommand);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            replicaService.updateReplicaStatus(newCommand);
+            replicaListService.updateReplicaStatus(newCommand);
         });
 
         //then
@@ -103,18 +100,18 @@ public class ReplicaServiceTest {
     }
 
     private Replica givenReplica(String replicaName, String ownerEmail){
-        ReplicaUseCase.CreateOwnerCommand ownerCommand = toCreateOwnerCommand(ownerEmail);
-        ReplicaUseCase.CreateReplicaCommand command = new ReplicaUseCase.CreateReplicaCommand(
+        ReplicaListUseCase.CreateOwnerCommand ownerCommand = toCreateOwnerCommand(ownerEmail);
+        ReplicaListUseCase.CreateReplicaCommand command = new ReplicaListUseCase.CreateReplicaCommand(
                 replicaName,
                 "this replica is supposed to be fully upgraded",
                 "3 mid-cap magazines",
                 ownerCommand
         );
-        return replicaService.addReplica(command);
+        return replicaListService.addReplica(command);
     }
 
-    private ReplicaUseCase.CreateOwnerCommand toCreateOwnerCommand(String email) {
-        return new ReplicaUseCase.CreateOwnerCommand(
+    private ReplicaListUseCase.CreateOwnerCommand toCreateOwnerCommand(String email) {
+        return new ReplicaListUseCase.CreateOwnerCommand(
                 "Pawel", "7123123", "example 12/3",
                 "City", "11-123", email
         );

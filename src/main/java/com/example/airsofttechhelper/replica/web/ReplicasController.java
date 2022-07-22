@@ -1,9 +1,9 @@
 package com.example.airsofttechhelper.replica.web;
 
-import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase;
-import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase.CreateOwnerCommand;
-import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase.UpdateStatusCommand;
-import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase.UpdateStatusResponse;
+import com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase;
+import com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase.CreateOwnerCommand;
+import com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase.UpdateStatusCommand;
+import com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase.UpdateStatusResponse;
 import com.example.airsofttechhelper.replica.domain.Replica;
 import com.example.airsofttechhelper.web.CreatedURI;
 import lombok.AllArgsConstructor;
@@ -23,43 +23,43 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.example.airsofttechhelper.replica.application.port.ReplicaUseCase.CreateReplicaCommand;
+import static com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase.CreateReplicaCommand;
 
 @RestController
-@RequestMapping("/replicas")
+@RequestMapping("/replicas-list")
 @AllArgsConstructor
 public class ReplicasController {
-    private final ReplicaUseCase replicaService;
+    private final ReplicaListUseCase replicaService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<RestMinReplica> getAllReplicas(@RequestParam Optional<String> status){
-        List<RestMinReplica> replicas;
+    public List<RestListReplica> getAllReplicas(@RequestParam Optional<String> status){
+        List<RestListReplica> replicas;
         if(status.isPresent()){
             replicas = replicaService.findByStatus(status.get())
                     .stream()
-                    .map(this::toRestReplica)
+                    .map(this::toRestListReplica)
                     .collect(Collectors.toList());
         }
         replicas= replicaService.findAll()
                 .stream()
-                .map(this::toRestReplica)
+                .map(this::toRestListReplica)
                 .collect(Collectors.toList());
 
         return replicas;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RestMinReplica> getReplicaById(@PathVariable Long id){
+    public ResponseEntity<RestListReplica> getReplicaById(@PathVariable Long id){
         return replicaService.findOneById(id)
-                .map(replica -> ResponseEntity.ok(toRestReplica(replica)))
+                .map(replica -> ResponseEntity.ok(toRestListReplica(replica)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
 
 
-    private RestMinReplica toRestReplica(Replica replica) {
-        return new RestMinReplica(replica.getId(), replica.getName(), replica.getStatus(),
+    private RestListReplica toRestListReplica(Replica replica) {
+        return new RestListReplica(replica.getId(), replica.getName(), replica.getStatus(),
                 replica.getCreatedAt(), replica.getOwner().getEmail());
     }
 
