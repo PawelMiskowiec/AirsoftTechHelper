@@ -13,19 +13,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ReplicasControllerIT {
     @Autowired
     ReplicaUseCase replicaService;
-
-    @Autowired
-    OwnerJpaRepository ownerJpaRepository;
 
     @Autowired
     ReplicasController replicasController;
@@ -41,6 +38,7 @@ class ReplicasControllerIT {
 
 
     @Test
+    @Transactional
     public void  getAllReplicas(){
         //given
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
@@ -54,20 +52,27 @@ class ReplicasControllerIT {
     }
 
     @Test
-    public void getFullReplicaWithReplicaPartsTest(){
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    public void getFullReplicaTest(){ //Just playing with hql, lazy initialization, hashCode & equals
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
+
         ReplicaPartUseCase.CreateReplicaPartCommand command =
                 new ReplicaPartUseCase.CreateReplicaPartCommand(replica.getId(), Optional.empty(), "First Part",
                         "HopUp", "Very good part");
         ReplicaPartUseCase.CreateReplicaPartCommand command2 =
                 new ReplicaPartUseCase.CreateReplicaPartCommand(replica.getId(), Optional.empty(), "Second Part",
                         "misc", "Very good part");
-        ReplicaPart replicaPart = replicaPartService.addReplicaPart(command);
-        ReplicaPart replicaPart2 = replicaPartService.addReplicaPart(command2);
 
+        System.out.println("\nAdding first part \n");
+        ReplicaPart replicaPart = replicaPartService.addReplicaPart(command);
+        System.out.println("\nAdding second part \n");
+        ReplicaPart replicaPart2 = replicaPartService.addReplicaPart(command2);
+        System.out.println("\nAdding todo \n");
         toDoService.addToDo("ExampleToDo", "Example todoContent", replica.getId());
 
-        replicaService.findOneByIdEager(replica.getId()).get()
+        System.out.println("\n before printing parts \n");
+
+        replicaService.findOneByIdEager(replica.getId()).get() //this method manages to fetch all associated entities with one query
                 .getReplicaParts().forEach(replicaPart1 -> System.out.println(replicaPart1.getPart().getName()));
         System.out.println(replicaPart.hashCode() == replicaPart2.hashCode());
         System.out.println(replicaPart.equals(replicaPart2));

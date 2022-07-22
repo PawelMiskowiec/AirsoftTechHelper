@@ -12,8 +12,8 @@ import java.util.Optional;
 public interface ReplicaJpaRepository extends JpaRepository<Replica, Long> {
     List<Replica> findByStatusIsContaining(ReplicaStatus status);
 
-    @Query(" SELECT DISTINCT r FROM Replica r " +
-            " LEFT JOIN FETCH r.replicaParts LEFT JOIN FETCH r.toDos " +
+    @Query(" SELECT r FROM Replica r " +
+            " LEFT JOIN FETCH r.replicaParts as rp JOIN FETCH rp.part LEFT JOIN FETCH r.toDos JOIN FETCH r.owner" +
             " WHERE r.id = :id ")
     Optional<Replica> findOneByIdEager(@Param("id") Long id);
 }

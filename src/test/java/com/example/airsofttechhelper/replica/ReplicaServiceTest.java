@@ -4,6 +4,7 @@ import com.example.airsofttechhelper.replica.application.ReplicaService;
 import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase;
 import com.example.airsofttechhelper.replica.db.OwnerJpaRepository;
 import com.example.airsofttechhelper.replica.db.ReplicaJpaRepository;
+import com.example.airsofttechhelper.replica.domain.Owner;
 import com.example.airsofttechhelper.replica.domain.Replica;
 import com.example.airsofttechhelper.replica.domain.ReplicaStatus;
 import org.junit.jupiter.api.Assertions;
@@ -12,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+
+import javax.transaction.Transactional;
 
 import static com.example.airsofttechhelper.replica.application.port.ReplicaUseCase.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,7 +37,7 @@ public class ReplicaServiceTest {
     @Test
     public void userCanAddReplica(){
         //given
-        CreateOwnerCommand ownerCommand = toCreateOwnerCommand("Pawel");
+        CreateOwnerCommand ownerCommand = toCreateOwnerCommand("pawel@owner.com");
         CreateReplicaCommand command = new CreateReplicaCommand(
                 "GG tr16 308 sr",
                 "this replica is supposed to be fully upgraded",
