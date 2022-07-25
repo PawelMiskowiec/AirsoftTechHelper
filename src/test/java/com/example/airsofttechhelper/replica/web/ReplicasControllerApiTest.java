@@ -1,6 +1,7 @@
 package com.example.airsofttechhelper.replica.web;
 
 import com.example.airsofttechhelper.replica.domain.ReplicaStatus;
+import com.example.airsofttechhelper.replica.web.dto.RestListReplica;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

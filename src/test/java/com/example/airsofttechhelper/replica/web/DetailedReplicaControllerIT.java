@@ -7,7 +7,9 @@ import com.example.airsofttechhelper.replica.application.ReplicaListService;
 import com.example.airsofttechhelper.replica.application.ReplicaService;
 import com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase;
 import com.example.airsofttechhelper.replica.domain.Replica;
-import com.example.airsofttechhelper.todo.application.ToDoService;
+import com.example.airsofttechhelper.replica.application.ToDoService;
+import com.example.airsofttechhelper.replica.application.port.ToDoUseCase;
+import com.example.airsofttechhelper.replica.domain.ToDo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -52,7 +54,11 @@ class DetailedReplicaControllerIT {
         System.out.println("\nAdding second part \n");
         ReplicaPart replicaPart2 = replicaPartService.addReplicaPart(command2);
         System.out.println("\nAdding todo \n");
-        toDoService.addToDo("ExampleToDo", "Example todoContent", replica.getId());
+        ToDoUseCase.CreateToDoCommand createToDoCommand = new ToDoUseCase.CreateToDoCommand("ExampleToDo", "Example todoContent", replica.getId());
+        ToDo toDo = toDoService.addToDo(createToDoCommand);
+        System.out.println("\nUpdating todo\n");
+        ToDoUseCase.UpdateToDoCommand updateToDoCommand = new ToDoUseCase.UpdateToDoCommand("Updated ExampleToDo", "toDoContent", toDo.getId());
+        toDoService.updateToDO(updateToDoCommand);
 
         System.out.println("\n before printing parts \n");
 

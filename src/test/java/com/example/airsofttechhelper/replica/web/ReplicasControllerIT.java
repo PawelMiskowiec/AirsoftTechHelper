@@ -1,18 +1,17 @@
 package com.example.airsofttechhelper.replica.web;
 
 import com.example.airsofttechhelper.part.application.port.ReplicaPartUseCase;
-import com.example.airsofttechhelper.part.domain.ReplicaPart;
 import com.example.airsofttechhelper.part.web.ReplicaPartsController;
 import com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase;
 import com.example.airsofttechhelper.replica.domain.Replica;
-import com.example.airsofttechhelper.todo.application.port.ToDoUseCase;
+import com.example.airsofttechhelper.replica.application.port.ToDoUseCase;
+import com.example.airsofttechhelper.replica.web.dto.RestListReplica;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;

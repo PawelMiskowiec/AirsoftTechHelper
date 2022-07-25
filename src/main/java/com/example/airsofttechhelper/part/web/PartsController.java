@@ -64,9 +64,9 @@ public class PartsController {
 
     @Value
     class CreatePartRestCommand{
-        @NotBlank(message = "Please provide an part's name")
+        @NotBlank(message = "Please provide an parts name")
         String name;
-        @NotBlank(message = "Please provide an part's category")
+        @NotBlank(message = "Please provide an parts category")
         String category;
 
         CreatePartCommand toCreateCommand(){

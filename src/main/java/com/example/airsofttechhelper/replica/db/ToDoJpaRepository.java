@@ -1,6 +1,6 @@
-package com.example.airsofttechhelper.todo.db;
+package com.example.airsofttechhelper.replica.db;
 
-import com.example.airsofttechhelper.todo.domain.ToDo;
+import com.example.airsofttechhelper.replica.domain.ToDo;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ToDoJpaRepository extends JpaRepository<ToDo, Long> {

@@ -1,4 +1,4 @@
-package com.example.airsofttechhelper.todo.web;
+package com.example.airsofttechhelper.replica.web.dto;
 
 import lombok.Value;
 

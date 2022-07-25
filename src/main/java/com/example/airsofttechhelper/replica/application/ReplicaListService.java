@@ -52,8 +52,10 @@ public class ReplicaListService implements ReplicaListUseCase {
                     replica.updateStatus(toReplicaStatus(command.getReplicaStatus()));
                     repository.save(replica);
                     return UpdateStatusResponse.SUCCESS;
-                }).orElse(new UpdateStatusResponse(false,
-                        Collections.singletonList("Replica with id " + command.getReplicaId() + "not found")));
+                }).orElse(
+                        new UpdateStatusResponse(false,
+                        Collections.singletonList("Replica with id " + command.getReplicaId() + "not found"))
+                );
     }
 
     private ReplicaStatus toReplicaStatus(String status) {

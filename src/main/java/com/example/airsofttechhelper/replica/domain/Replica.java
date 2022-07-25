@@ -2,7 +2,6 @@ package com.example.airsofttechhelper.replica.domain;
 
 import com.example.airsofttechhelper.jpa.BaseEntity;
 import com.example.airsofttechhelper.part.domain.ReplicaPart;
-import com.example.airsofttechhelper.todo.domain.ToDo;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;

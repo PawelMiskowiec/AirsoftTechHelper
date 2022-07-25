@@ -1,4 +1,4 @@
-package com.example.airsofttechhelper.todo.domain;
+package com.example.airsofttechhelper.replica.domain;
 
 import com.example.airsofttechhelper.jpa.BaseEntity;
 import com.example.airsofttechhelper.replica.domain.Replica;
@@ -10,7 +10,6 @@ import lombok.Setter;
 import javax.persistence.*;
 
 @Entity
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -18,6 +17,6 @@ import javax.persistence.*;
 public class ToDo extends BaseEntity {
     private String title;
     private String content;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne(fetch = FetchType.LAZY)
     private Replica replica;
 }

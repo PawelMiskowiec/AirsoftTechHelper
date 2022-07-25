@@ -4,7 +4,10 @@ import com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase
 import com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase.CreateOwnerCommand;
 import com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase.UpdateStatusCommand;
 import com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase.UpdateStatusResponse;
+import com.example.airsofttechhelper.replica.application.port.ToDoUseCase;
+import com.example.airsofttechhelper.replica.application.port.ToDoUseCase.CreateToDoCommand;
 import com.example.airsofttechhelper.replica.domain.Replica;
+import com.example.airsofttechhelper.replica.web.dto.RestListReplica;
 import com.example.airsofttechhelper.web.CreatedURI;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,9 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -109,22 +110,22 @@ public class ReplicasController {
 
     @Data
     static class RestOwnerCommand {
-        @NotBlank(message = "Please provide an Owner's name")
+        @NotBlank(message = "Please provide an Owners name")
         private String name;
 
-        @NotBlank(message = "Please provide an Owner's phone number")
+        @NotBlank(message = "Please provide an Owners phone number")
         private String phone;
 
-        @NotBlank(message = "Please provide an Owner's street")
+        @NotBlank(message = "Please provide an Owners street")
         private String street;
 
-        @NotBlank(message = "Please provide an Owner's city")
+        @NotBlank(message = "Please provide an Owners city")
         private String city;
 
-        @NotBlank(message = "Please provide an Owner's zipCode")
+        @NotBlank(message = "Please provide an Owners zipCode")
         private String zipCode;
 
-        @Email(message = "Please provide an Owner's email")
+        @Email(message = "Please provide an Owners email")
         private String email;
 
         CreateOwnerCommand toCreateOwnerCommand(){

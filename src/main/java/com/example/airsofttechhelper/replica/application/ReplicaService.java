@@ -5,9 +5,9 @@ import com.example.airsofttechhelper.part.web.RestReplicaPart;
 import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase;
 import com.example.airsofttechhelper.replica.db.ReplicaJpaRepository;
 import com.example.airsofttechhelper.replica.domain.Replica;
-import com.example.airsofttechhelper.replica.web.RestReplica;
-import com.example.airsofttechhelper.todo.domain.ToDo;
-import com.example.airsofttechhelper.todo.web.RestToDo;
+import com.example.airsofttechhelper.replica.web.dto.RestDetailedReplica;
+import com.example.airsofttechhelper.replica.domain.ToDo;
+import com.example.airsofttechhelper.replica.web.dto.RestToDo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,14 +23,14 @@ public class ReplicaService implements ReplicaUseCase {
     private final ReplicaJpaRepository repository;
 
     @Override
-    public RestReplica findById(Long id) {
+    public RestDetailedReplica findById(Long id) {
         return repository.findOneByIdEager(id)
                 .map(this::toRestReplica)
                 .orElseThrow(() -> new IllegalArgumentException("Cannot find replica with id " + id));
     }
 
-    private RestReplica toRestReplica(Replica replica) {
-        return new RestReplica(
+    private RestDetailedReplica toRestReplica(Replica replica) {
+        return new RestDetailedReplica(
                 replica.getId(),
                 replica.getName(),
                 replica.getAdditionalEquipment(),
