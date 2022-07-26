@@ -1,19 +1,13 @@
 package com.example.airsofttechhelper.replica.application;
 
-import com.example.airsofttechhelper.part.domain.ReplicaPart;
-import com.example.airsofttechhelper.part.web.RestReplicaPart;
 import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase;
 import com.example.airsofttechhelper.replica.db.ReplicaJpaRepository;
 import com.example.airsofttechhelper.replica.domain.Replica;
-import com.example.airsofttechhelper.replica.web.dto.RestDetailedReplica;
-import com.example.airsofttechhelper.replica.domain.ToDo;
-import com.example.airsofttechhelper.replica.web.dto.RestToDo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -23,46 +17,36 @@ public class ReplicaService implements ReplicaUseCase {
     private final ReplicaJpaRepository repository;
 
     @Override
-    public RestDetailedReplica findById(Long id) {
+    public Replica findById(Long id) {
         return repository.findOneByIdEager(id)
-                .map(this::toRestReplica)
                 .orElseThrow(() -> new IllegalArgumentException("Cannot find replica with id " + id));
     }
 
-    private RestDetailedReplica toRestReplica(Replica replica) {
-        return new RestDetailedReplica(
-                replica.getId(),
-                replica.getName(),
-                replica.getAdditionalEquipment(),
-                replica.getOwner().getName(),
-                replica.getCreatedAt(),
-                replica.getUpdatedAt(),
-                toRestReplicaParts(replica.getReplicaParts(), replica.getId()),
-                toRestToDo(replica.getToDos())
-        );
-    }
-
-    private Set<RestToDo> toRestToDo(Set<ToDo> toDos) {
-        return toDos.stream()
-                .map(toDo -> new RestToDo(toDo.getTitle(), toDo.getContent()))
-                .collect(Collectors.toSet());
-    }
-
-    private Set<RestReplicaPart> toRestReplicaParts(Set<ReplicaPart> replicaParts, Long replicaId) {
-        return replicaParts.stream()
-                .map(replicaPart -> new RestReplicaPart(
-                        replicaPart.getPart().getName(),
-                        replicaPart.getPart().getCategory(),
-                        replicaPart.getPart().getId(),
-                        replicaId,
-                        replicaPart.getNotes(),
-                        replicaPart.getCreatedAt()
-                )).collect(Collectors.toSet());
-    }
 
     @Override
-    public void updateReplica() {
+    public UpdateReplicaResponse updateReplica(UpdateReplicaCommand command) {
+        return repository.findById(command.getReplicaId())
+                .map(replica -> {
+                    updateFields(command, replica);
+                    return UpdateReplicaResponse.SUCCESS;
+                })
+                .orElse(new UpdateReplicaResponse(
+                        false,
+                        List.of("Replica with id " + command.getReplicaId() + " not found")
+                ));
+    }
 
+    private Replica updateFields(UpdateReplicaCommand command, Replica replica) {
+        if(command.getName() != null){
+            replica.setName(command.getName());
+        }
+        if(command.getDescription() != null){
+            replica.setDescription(command.getDescription());
+        }
+        if(command.getAdditionalEquipment() != null){
+            replica.setAdditionalEquipment(command.getAdditionalEquipment());
+        }
+        return replica;
     }
 
     @Override

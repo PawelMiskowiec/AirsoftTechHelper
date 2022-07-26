@@ -2,10 +2,10 @@ package com.example.airsofttechhelper.replica.web;
 
 import com.example.airsofttechhelper.part.application.port.ReplicaPartUseCase;
 import com.example.airsofttechhelper.part.web.ReplicaPartsController;
-import com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase;
+import com.example.airsofttechhelper.replica.application.port.BasicReplicaUseCase;
 import com.example.airsofttechhelper.replica.domain.Replica;
 import com.example.airsofttechhelper.replica.application.port.ToDoUseCase;
-import com.example.airsofttechhelper.replica.web.dto.RestListReplica;
+import com.example.airsofttechhelper.replica.web.dto.RestBasicReplica;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +18,12 @@ import java.util.Optional;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
-class ReplicasControllerIT {
+class BasicReplicasControllerIT {
     @Autowired
-    ReplicaListUseCase replicaService;
+    BasicReplicaUseCase replicaService;
 
     @Autowired
-    ReplicasController replicasController;
+    BasicReplicasController basicReplicasController;
 
     @Autowired
     ReplicaPartsController replicaPartsController;
@@ -45,7 +45,7 @@ class ReplicasControllerIT {
         Replica replica2 = givenReplica("EA m4", "pawel@miskowiec.com");
 
         //when
-        List<RestListReplica> all = replicasController.getAllReplicas(Optional.empty());
+        List<RestBasicReplica> all = basicReplicasController.getAllReplicas(Optional.empty());
 
         //then
         Assertions.assertEquals(2, all.size());
@@ -53,8 +53,8 @@ class ReplicasControllerIT {
 
 
     private Replica givenReplica(String replicaName, String ownerEmail){
-        ReplicaListUseCase.CreateOwnerCommand ownerCommand = toCreateOwnerCommand(ownerEmail);
-        ReplicaListUseCase.CreateReplicaCommand command = new ReplicaListUseCase.CreateReplicaCommand(
+        BasicReplicaUseCase.CreateOwnerCommand ownerCommand = toCreateOwnerCommand(ownerEmail);
+        BasicReplicaUseCase.CreateReplicaCommand command = new BasicReplicaUseCase.CreateReplicaCommand(
                 replicaName,
                 "this replica is supposed to be fully upgraded",
                 "3 mid-cap magazines",
@@ -63,8 +63,8 @@ class ReplicasControllerIT {
         return replicaService.addReplica(command);
     }
 
-    private ReplicaListUseCase.CreateOwnerCommand toCreateOwnerCommand(String email) {
-        return new ReplicaListUseCase.CreateOwnerCommand(
+    private BasicReplicaUseCase.CreateOwnerCommand toCreateOwnerCommand(String email) {
+        return new BasicReplicaUseCase.CreateOwnerCommand(
                 "Pawel", "7123123", "example 12/3",
                 "City", "11-123", email
         );

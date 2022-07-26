@@ -1,13 +1,11 @@
 package com.example.airsofttechhelper.replica.web;
 
-import com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase;
-import com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase.CreateOwnerCommand;
-import com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase.UpdateStatusCommand;
-import com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase.UpdateStatusResponse;
-import com.example.airsofttechhelper.replica.application.port.ToDoUseCase;
-import com.example.airsofttechhelper.replica.application.port.ToDoUseCase.CreateToDoCommand;
+import com.example.airsofttechhelper.replica.application.port.BasicReplicaUseCase;
+import com.example.airsofttechhelper.replica.application.port.BasicReplicaUseCase.CreateOwnerCommand;
+import com.example.airsofttechhelper.replica.application.port.BasicReplicaUseCase.UpdateReplicaStatusCommand;
+import com.example.airsofttechhelper.replica.application.port.BasicReplicaUseCase.UpdateStatusResponse;
 import com.example.airsofttechhelper.replica.domain.Replica;
-import com.example.airsofttechhelper.replica.web.dto.RestListReplica;
+import com.example.airsofttechhelper.replica.web.dto.RestBasicReplica;
 import com.example.airsofttechhelper.web.CreatedURI;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,18 +22,18 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase.CreateReplicaCommand;
+import static com.example.airsofttechhelper.replica.application.port.BasicReplicaUseCase.CreateReplicaCommand;
 
 @RestController
 @RequestMapping("/replicas-list")
 @AllArgsConstructor
-public class ReplicasController {
-    private final ReplicaListUseCase replicaService;
+public class BasicReplicasController {
+    private final BasicReplicaUseCase replicaService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<RestListReplica> getAllReplicas(@RequestParam Optional<String> status){
-        List<RestListReplica> replicas;
+    public List<RestBasicReplica> getAllReplicas(@RequestParam Optional<String> status){
+        List<RestBasicReplica> replicas;
         if(status.isPresent()){
             replicas = replicaService.findByStatus(status.get())
                     .stream()
@@ -51,7 +49,7 @@ public class ReplicasController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RestListReplica> getReplicaById(@PathVariable Long id){
+    public ResponseEntity<RestBasicReplica> getReplicaById(@PathVariable Long id){
         return replicaService.findOneById(id)
                 .map(replica -> ResponseEntity.ok(toRestListReplica(replica)))
                 .orElse(ResponseEntity.notFound().build());
@@ -59,8 +57,8 @@ public class ReplicasController {
 
 
 
-    private RestListReplica toRestListReplica(Replica replica) {
-        return new RestListReplica(replica.getId(), replica.getName(), replica.getStatus(),
+    private RestBasicReplica toRestListReplica(Replica replica) {
+        return new RestBasicReplica(replica.getId(), replica.getName(), replica.getStatus(),
                 replica.getCreatedAt(), replica.getOwner().getEmail());
     }
 
@@ -75,7 +73,7 @@ public class ReplicasController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void updateReplicaStatus(@PathVariable Long id, @RequestBody Map<String, String> body){
         String newStatus = body.get("status");
-        UpdateStatusCommand command = new UpdateStatusCommand(id, newStatus);
+        UpdateReplicaStatusCommand command = new UpdateReplicaStatusCommand(id, newStatus);
         UpdateStatusResponse response = replicaService.updateReplicaStatus(command);
         if(!response.isSuccess()){
             String errorMessage = String.join(", ", response.getErrors());

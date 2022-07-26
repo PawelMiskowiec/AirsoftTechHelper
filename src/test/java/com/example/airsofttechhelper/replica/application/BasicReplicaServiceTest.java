@@ -1,7 +1,6 @@
-package com.example.airsofttechhelper.replica;
+package com.example.airsofttechhelper.replica.application;
 
-import com.example.airsofttechhelper.replica.application.ReplicaListService;
-import com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase;
+import com.example.airsofttechhelper.replica.application.port.BasicReplicaUseCase;
 import com.example.airsofttechhelper.replica.db.OwnerJpaRepository;
 import com.example.airsofttechhelper.replica.db.ReplicaJpaRepository;
 import com.example.airsofttechhelper.replica.domain.Replica;
@@ -13,14 +12,14 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
-import static com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase.*;
+import static com.example.airsofttechhelper.replica.application.port.BasicReplicaUseCase.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class ReplicaListServiceTest {
+public class BasicReplicaServiceTest {
 
     @Autowired
     ReplicaJpaRepository replicaJpaRepository;
@@ -29,7 +28,7 @@ public class ReplicaListServiceTest {
     OwnerJpaRepository ownerJpaRepository;
 
     @Autowired
-    ReplicaListService replicaListService;
+    BasicBasicReplicaService basicReplicaService;
 
     @Test
     public void userCanAddReplica(){
@@ -43,7 +42,7 @@ public class ReplicaListServiceTest {
                 );
 
         //when
-        Replica replica = replicaListService.addReplica(command);
+        Replica replica = basicReplicaService.addReplica(command);
 
         //then
         assertEquals(replica, replicaJpaRepository.findById(replica.getId()).get());
@@ -54,10 +53,10 @@ public class ReplicaListServiceTest {
     public void userCanChangeReplicaStatusFromNewToInProgress(){
         //given
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
-        UpdateStatusCommand command = new UpdateStatusCommand(replica.getId(), "INPROGRESS");
+        UpdateReplicaStatusCommand command = new UpdateReplicaStatusCommand(replica.getId(), "INPROGRESS");
 
         //when
-        replicaListService.updateReplicaStatus(command);
+        basicReplicaService.updateReplicaStatus(command);
 
         //then
         assertEquals(ReplicaStatus.INPROGRESS, replicaJpaRepository.findById(replica.getId()).get().getStatus());
@@ -68,14 +67,14 @@ public class ReplicaListServiceTest {
     public void userCannotChangeFinishedReplicaStatus(){
         //given
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
-        UpdateStatusCommand testingCommand = new UpdateStatusCommand(replica.getId(), "TESTING");
-        UpdateStatusCommand finishedCommand = new UpdateStatusCommand(replica.getId(), "FINISHED");
+        UpdateReplicaStatusCommand testingCommand = new UpdateReplicaStatusCommand(replica.getId(), "TESTING");
+        UpdateReplicaStatusCommand finishedCommand = new UpdateReplicaStatusCommand(replica.getId(), "FINISHED");
 
         //when
-        replicaListService.updateReplicaStatus(testingCommand);
-        replicaListService.updateReplicaStatus(finishedCommand);
+        basicReplicaService.updateReplicaStatus(testingCommand);
+        basicReplicaService.updateReplicaStatus(finishedCommand);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            replicaListService.updateReplicaStatus(testingCommand);
+            basicReplicaService.updateReplicaStatus(testingCommand);
         });
 
         //then
@@ -86,13 +85,13 @@ public class ReplicaListServiceTest {
     public void userCannotChangeInProgressReplicaStatusToNew(){
         //given
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
-        UpdateStatusCommand newCommand = new UpdateStatusCommand(replica.getId(), "NEW");
-        UpdateStatusCommand inProgressCommand = new UpdateStatusCommand(replica.getId(), "INPROGRESS");
+        UpdateReplicaStatusCommand newCommand = new UpdateReplicaStatusCommand(replica.getId(), "NEW");
+        UpdateReplicaStatusCommand inProgressCommand = new UpdateReplicaStatusCommand(replica.getId(), "INPROGRESS");
 
         //when
-        replicaListService.updateReplicaStatus(inProgressCommand);
+        basicReplicaService.updateReplicaStatus(inProgressCommand);
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            replicaListService.updateReplicaStatus(newCommand);
+            basicReplicaService.updateReplicaStatus(newCommand);
         });
 
         //then
@@ -100,18 +99,18 @@ public class ReplicaListServiceTest {
     }
 
     private Replica givenReplica(String replicaName, String ownerEmail){
-        ReplicaListUseCase.CreateOwnerCommand ownerCommand = toCreateOwnerCommand(ownerEmail);
-        ReplicaListUseCase.CreateReplicaCommand command = new ReplicaListUseCase.CreateReplicaCommand(
+        BasicReplicaUseCase.CreateOwnerCommand ownerCommand = toCreateOwnerCommand(ownerEmail);
+        BasicReplicaUseCase.CreateReplicaCommand command = new BasicReplicaUseCase.CreateReplicaCommand(
                 replicaName,
                 "this replica is supposed to be fully upgraded",
                 "3 mid-cap magazines",
                 ownerCommand
         );
-        return replicaListService.addReplica(command);
+        return basicReplicaService.addReplica(command);
     }
 
-    private ReplicaListUseCase.CreateOwnerCommand toCreateOwnerCommand(String email) {
-        return new ReplicaListUseCase.CreateOwnerCommand(
+    private BasicReplicaUseCase.CreateOwnerCommand toCreateOwnerCommand(String email) {
+        return new BasicReplicaUseCase.CreateOwnerCommand(
                 "Pawel", "7123123", "example 12/3",
                 "City", "11-123", email
         );

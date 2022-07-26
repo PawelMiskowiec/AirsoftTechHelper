@@ -1,6 +1,6 @@
 package com.example.airsofttechhelper.replica.application;
 
-import com.example.airsofttechhelper.replica.application.port.ReplicaListUseCase;
+import com.example.airsofttechhelper.replica.application.port.BasicReplicaUseCase;
 import com.example.airsofttechhelper.replica.db.OwnerJpaRepository;
 import com.example.airsofttechhelper.replica.db.ReplicaJpaRepository;
 import com.example.airsofttechhelper.replica.domain.Owner;
@@ -17,7 +17,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 @Transactional
-public class ReplicaListService implements ReplicaListUseCase {
+public class BasicBasicReplicaService implements BasicReplicaUseCase {
 
     private final ReplicaJpaRepository repository;
 
@@ -45,7 +45,7 @@ public class ReplicaListService implements ReplicaListUseCase {
     }
 
     @Override
-    public UpdateStatusResponse updateReplicaStatus(UpdateStatusCommand command) {
+    public UpdateStatusResponse updateReplicaStatus(UpdateReplicaStatusCommand command) {
         return repository
                 .findById(command.getReplicaId())
                 .map(replica -> {

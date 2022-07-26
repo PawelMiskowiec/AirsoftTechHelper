@@ -8,12 +8,12 @@ import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 
-public interface ReplicaListUseCase {
+public interface BasicReplicaUseCase {
     List<Replica> findAll();
     List<Replica> findByStatus(String status);
     Optional<Replica> findOneById(Long id);
     Replica addReplica(CreateReplicaCommand command);
-    UpdateStatusResponse updateReplicaStatus(UpdateStatusCommand command);
+    UpdateStatusResponse updateReplicaStatus(UpdateReplicaStatusCommand command);
     void deleteReplica(Long id);
 
     @Value
@@ -35,7 +35,7 @@ public interface ReplicaListUseCase {
     }
 
     @Value
-    class UpdateStatusCommand{
+    class UpdateReplicaStatusCommand {
         Long replicaId;
         String replicaStatus;
     }

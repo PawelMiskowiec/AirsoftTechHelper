@@ -1,7 +1,7 @@
 package com.example.airsofttechhelper.replica.web;
 
 import com.example.airsofttechhelper.replica.domain.ReplicaStatus;
-import com.example.airsofttechhelper.replica.web.dto.RestListReplica;
+import com.example.airsofttechhelper.replica.web.dto.RestBasicReplica;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -23,13 +23,13 @@ import java.util.Optional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
-class ReplicasControllerApiTest {
+class BasicReplicasControllerApiTest {
 
     @LocalServerPort
     private int port;
 
     @MockBean
-    ReplicasController replicasController;
+    BasicReplicasController basicReplicasController;
 
     @Autowired
     TestRestTemplate restTemplate;
@@ -37,18 +37,18 @@ class ReplicasControllerApiTest {
     @Test
     void getAllReplicas() {
         //given
-        RestListReplica replica = new RestListReplica(1L, "gg tr16", ReplicaStatus.TESTING, LocalDateTime.now(),
+        RestBasicReplica replica = new RestBasicReplica(1L, "gg tr16", ReplicaStatus.TESTING, LocalDateTime.now(),
                 "owner@gmail.com");
-        RestListReplica replica2 = new RestListReplica(1L, "ea m4", ReplicaStatus.INPROGRESS, LocalDateTime.now(),
+        RestBasicReplica replica2 = new RestBasicReplica(1L, "ea m4", ReplicaStatus.INPROGRESS, LocalDateTime.now(),
                 "owner@gmail.com");
 
-        Mockito.when(replicasController.getAllReplicas(Optional.empty())).thenReturn(List.of(replica, replica2));
-        ParameterizedTypeReference<List<RestListReplica>> typeReference = new ParameterizedTypeReference<>(){};
+        Mockito.when(basicReplicasController.getAllReplicas(Optional.empty())).thenReturn(List.of(replica, replica2));
+        ParameterizedTypeReference<List<RestBasicReplica>> typeReference = new ParameterizedTypeReference<>(){};
 
         //when
         String url = "http://localhost:" + port + "/replicas-list";
         RequestEntity<?> request = RequestEntity.get(URI.create(url)).build();
-        List<RestListReplica> response = restTemplate.exchange(request, typeReference).getBody();
+        List<RestBasicReplica> response = restTemplate.exchange(request, typeReference).getBody();
 
         //then
         Assertions.assertEquals(2, response.size());
@@ -57,14 +57,14 @@ class ReplicasControllerApiTest {
     @Test
     void getReplicaById(){
         //given
-        RestListReplica replica = new RestListReplica(1L, "gg tr16", ReplicaStatus.TESTING, LocalDateTime.now(),
+        RestBasicReplica replica = new RestBasicReplica(1L, "gg tr16", ReplicaStatus.TESTING, LocalDateTime.now(),
                 "owner@gmail.com");
-        Mockito.when(replicasController.getReplicaById(1L)).thenReturn(ResponseEntity.ok(replica));
+        Mockito.when(basicReplicasController.getReplicaById(1L)).thenReturn(ResponseEntity.ok(replica));
 
         //when
         String url = "http://localhost:" + port + "/replicas-list/1";
         RequestEntity<?> request = RequestEntity.get(url).build();
-        ResponseEntity<RestListReplica> response = restTemplate.exchange(request, RestListReplica.class);
+        ResponseEntity<RestBasicReplica> response = restTemplate.exchange(request, RestBasicReplica.class);
 
         //then
         Assertions.assertEquals(HttpStatus.OK.toString(), response.getStatusCode().toString());
