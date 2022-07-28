@@ -37,17 +37,10 @@ public class ReplicaPartService implements ReplicaPartUseCase {
     }
 
     @Override
-    public Optional<ReplicaPart> findOneById(Long id) {
-        return repository.findById(id);
-    }
-
-    @Override
-    @Transactional()
+    @Transactional
     public ReplicaPart addReplicaPart(CreateReplicaPartCommand command) {
         Part part = getOrAddPart(command);
         Replica replica = replicaJpaRepository.getReferenceById(command.getReplicaId());
-                //.orElseThrow(() -> new IllegalArgumentException("Replica with id " + command.getReplicaId() + " not found"));
-
         ReplicaPart replicaPart = new ReplicaPart(command.getNotes(), part, replica);
         return repository.save(replicaPart);
     }
@@ -66,13 +59,13 @@ public class ReplicaPartService implements ReplicaPartUseCase {
     }
 
     @Override
-    public UpdateNotesResponse updateNotes(Long id, String newNotes) {
-        return repository.findById(id)
+    public UpdateNotesResponse updateNotes(UpdateReplicaPartNotesCommand command) {
+        return repository.findById(command.getReplicaPartId())
                 .map(replicaPart -> {
-                    replicaPart.setNotes(newNotes);
+                    replicaPart.setNotes(command.getNotes());
                     repository.save(replicaPart);
                     return UpdateNotesResponse.SUCCESS;
                 }).orElse(new UpdateNotesResponse(false,
-                        List.of("Replica part with id " + id + "not found")));
+                        List.of("Replica part with id " + command.getReplicaPartId() + "not found")));
     }
 }

@@ -11,17 +11,8 @@ import java.util.Optional;
 public interface ReplicaPartUseCase {
     List<ReplicaPart> findAll();
     List<ReplicaPart> findAllByReplicaId(Long replicaId);
-    Optional<ReplicaPart> findOneById(Long id);
     ReplicaPart addReplicaPart(CreateReplicaPartCommand command);
-    UpdateNotesResponse updateNotes(Long id, String newNotes);
-
-    @Value
-    class UpdateNotesResponse{
-        public static UpdateNotesResponse SUCCESS =
-                new UpdateNotesResponse(true, Collections.emptyList());
-        boolean success;
-        List<String> errors;
-    }
+    UpdateNotesResponse updateNotes(UpdateReplicaPartNotesCommand command);
 
     @Value
     class CreateReplicaPartCommand{
@@ -35,4 +26,19 @@ public interface ReplicaPartUseCase {
             return new PartUseCase.CreatePartCommand(partName, partCategory);
         }
     }
+
+    @Value
+    class UpdateReplicaPartNotesCommand{
+        Long replicaPartId;
+        String notes;
+    }
+
+    @Value
+    class UpdateNotesResponse{
+        public static UpdateNotesResponse SUCCESS =
+                new UpdateNotesResponse(true, Collections.emptyList());
+        boolean success;
+        List<String> errors;
+    }
+
 }

@@ -6,6 +6,7 @@ import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity
@@ -13,6 +14,7 @@ import javax.persistence.UniqueConstraint;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "owners")
 public class Owner extends BaseEntity {
     private String name;
     private String phone;

@@ -18,7 +18,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "replica")
+@Table(name = "replicas")
 @EntityListeners(AuditingEntityListener.class)
 public class Replica extends BaseEntity {
 

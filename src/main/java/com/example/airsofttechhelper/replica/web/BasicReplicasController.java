@@ -6,11 +6,15 @@ import com.example.airsofttechhelper.replica.application.port.BasicReplicaUseCas
 import com.example.airsofttechhelper.replica.application.port.BasicReplicaUseCase.UpdateStatusResponse;
 import com.example.airsofttechhelper.replica.domain.Replica;
 import com.example.airsofttechhelper.replica.web.dto.RestBasicReplica;
+import com.example.airsofttechhelper.security.UserSecurity;
 import com.example.airsofttechhelper.web.CreatedURI;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -30,9 +34,12 @@ import static com.example.airsofttechhelper.replica.application.port.BasicReplic
 public class BasicReplicasController {
     private final BasicReplicaUseCase replicaService;
 
+    private final UserSecurity userSecurity;
+
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<RestBasicReplica> getAllReplicas(@RequestParam Optional<String> status){
+    public List<RestBasicReplica> getAllUsersReplicas(@RequestParam Optional<String> status, @AuthenticationPrincipal User user){
         List<RestBasicReplica> replicas;
         if(status.isPresent()){
             replicas = replicaService.findByStatus(status.get())
@@ -48,6 +55,7 @@ public class BasicReplicasController {
         return replicas;
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/{id}")
     public ResponseEntity<RestBasicReplica> getReplicaById(@PathVariable Long id){
         return replicaService.findOneById(id)
@@ -62,6 +70,7 @@ public class BasicReplicasController {
                 replica.getCreatedAt(), replica.getOwner().getEmail());
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @PostMapping
     public ResponseEntity<Object> addReplica(@Valid @RequestBody RestReplicaCommand command){
         Replica replica = replicaService.addReplica(command.toCreateCommand());
@@ -69,6 +78,7 @@ public class BasicReplicasController {
         return ResponseEntity.created(uri).build();
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @PatchMapping("/{id}/status")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void updateReplicaStatus(@PathVariable Long id, @RequestBody Map<String, String> body){
@@ -79,12 +89,6 @@ public class BasicReplicasController {
             String errorMessage = String.join(", ", response.getErrors());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
         }
-    }
-
-    @DeleteMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteReplica(@PathVariable Long id){
-        replicaService.deleteReplica(id);
     }
 
     @Data

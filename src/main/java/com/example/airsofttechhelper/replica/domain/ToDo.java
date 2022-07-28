@@ -14,6 +14,7 @@ import javax.persistence.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "to_dos")
 public class ToDo extends BaseEntity {
     private String title;
     private String content;

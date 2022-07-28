@@ -92,9 +92,4 @@ public class BasicBasicReplicaService implements BasicReplicaUseCase {
                 command.getEmail()
         );
     }
-
-    @Override
-    public void deleteReplica(Long id) {
-        repository.deleteById(id);
-    }
 }

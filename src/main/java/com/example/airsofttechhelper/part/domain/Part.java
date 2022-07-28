@@ -14,6 +14,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "parts")
 public class Part extends BaseEntity {
 
     private String name;

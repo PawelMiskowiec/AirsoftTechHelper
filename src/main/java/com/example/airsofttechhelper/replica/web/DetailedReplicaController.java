@@ -8,10 +8,15 @@ import com.example.airsofttechhelper.replica.domain.Replica;
 import com.example.airsofttechhelper.replica.domain.ToDo;
 import com.example.airsofttechhelper.replica.web.dto.RestDetailedReplica;
 import com.example.airsofttechhelper.replica.web.dto.RestToDo;
+import com.example.airsofttechhelper.security.UserSecurity;
 import com.example.airsofttechhelper.web.CreatedURI;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -30,8 +35,11 @@ public class DetailedReplicaController {
     private final ReplicaUseCase replicaService;
     private final ToDoUseCase toDoService;
 
+    private final UserSecurity userSecurity;
+
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/{id}")
-    public ResponseEntity<RestDetailedReplica> getById(@PathVariable Long id) {
+    public ResponseEntity<RestDetailedReplica> getById(@PathVariable Long id, @AuthenticationPrincipal User user) {
         RestDetailedReplica restDetailedReplica = toRestDetailedReplica(replicaService.findById(id));
         URI uri = new CreatedURI("/replica/" + id).uri();
         return ResponseEntity.created(uri).build();
@@ -68,15 +76,24 @@ public class DetailedReplicaController {
                 )).collect(Collectors.toSet());
     }
 
+    @Secured({"ROLE_ADMIN"})
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteReplica(@PathVariable Long id){
+        replicaService.deleteReplica(id);
+    }
+
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @PostMapping("/todo")
-    public ResponseEntity<Object> addToDo(@Valid @RequestBody RestToDoCommand command) {
+    public ResponseEntity<Object> addToDo(@Valid @RequestBody RestToDoCommand command, @AuthenticationPrincipal User user) {
         ToDo toDo = toDoService.addToDo(command.toCreateToDoCommand());
         URI uri = new CreatedURI("/replica/" + command.replicaId + "/todo/" + toDo.getId()).uri();
         return ResponseEntity.created(uri).build();
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/todo/{id}")
-    public ResponseEntity<RestToDo> getToDoById(@PathVariable Long id) {
+    public ResponseEntity<RestToDo> getToDoById(@PathVariable Long id, @AuthenticationPrincipal User user) {
         return toDoService
                 .findOneById(id)
                 .map(toDo -> ResponseEntity.ok(toRestToDo(toDo)))

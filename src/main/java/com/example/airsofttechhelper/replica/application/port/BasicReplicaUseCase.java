@@ -14,7 +14,6 @@ public interface BasicReplicaUseCase {
     Optional<Replica> findOneById(Long id);
     Replica addReplica(CreateReplicaCommand command);
     UpdateStatusResponse updateReplicaStatus(UpdateReplicaStatusCommand command);
-    void deleteReplica(Long id);
 
     @Value
     class CreateReplicaCommand{

@@ -1,6 +1,5 @@
 package com.example.airsofttechhelper.part.web;
 
-import com.example.airsofttechhelper.part.application.PartService;
 import com.example.airsofttechhelper.part.application.port.PartUseCase;
 import com.example.airsofttechhelper.part.application.port.PartUseCase.CreatePartCommand;
 import com.example.airsofttechhelper.part.domain.Part;
@@ -9,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -45,7 +45,8 @@ public class PartsController {
         return ResponseEntity.ok(toRestPart(part.get()));
     }
 
-    @PostMapping()
+    @Secured({"ROLE_ADMIN"})
+    @PostMapping
     public ResponseEntity<Object> addPart(@RequestBody @Validated CreatePartRestCommand command){
         Part part= service.addPart(command.toCreateCommand());
         URI uri = new CreatedURI("/parts/" + part.getId().toString()).uri();
@@ -56,6 +57,7 @@ public class PartsController {
         return new RestPart(part.getId(), part.getName(), part.getCategory().name());
     }
 
+    @Secured({"ROLE_ADMIN"})
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePart(@PathVariable Long id){

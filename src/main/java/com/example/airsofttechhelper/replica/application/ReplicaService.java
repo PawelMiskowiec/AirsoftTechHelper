@@ -51,6 +51,6 @@ public class ReplicaService implements ReplicaUseCase {
 
     @Override
     public void deleteReplica(Long id) {
-
+        repository.deleteById(id);
     }
 }

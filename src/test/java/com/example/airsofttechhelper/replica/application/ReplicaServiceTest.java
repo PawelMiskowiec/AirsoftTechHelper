@@ -44,6 +44,26 @@ class ReplicaServiceTest {
     void updateReplica() {
         //given
         Replica replica = givenReplica("TR16 308SR", "example@gmail.com");
+        String newName = "TR16 308WH";
+        String newDescription = "Owner has paid extra to be done quickly";
+        String newAdditionalEquipment = "5 mags";
+        ReplicaUseCase.UpdateReplicaCommand updateCommand =
+                new ReplicaUseCase.UpdateReplicaCommand(replica.getId(), newName, newDescription, newAdditionalEquipment);
+        //when
+        replicaService.updateReplica(updateCommand);
+
+        //then
+        assertEquals(newName, replicaJpaRepository.findById(replica.getId()).get().getName());
+        assertEquals(newDescription, replicaJpaRepository.findById(replica.getId()).get().getDescription());
+        assertEquals(newAdditionalEquipment, replicaJpaRepository.findById(replica.getId()).get().getAdditionalEquipment());
+
+
+    }
+
+    @Test
+    void updateOnlyFewFieldsOfReplica() {
+        //given
+        Replica replica = givenReplica("TR16 308SR", "example@gmail.com");
         String newAdditionalEquipment = "5 mags";
         ReplicaUseCase.UpdateReplicaCommand updateCommand =
                 new ReplicaUseCase.UpdateReplicaCommand(replica.getId(), null, null, newAdditionalEquipment);

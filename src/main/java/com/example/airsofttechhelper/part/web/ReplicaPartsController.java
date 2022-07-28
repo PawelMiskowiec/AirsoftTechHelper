@@ -2,12 +2,17 @@ package com.example.airsofttechhelper.part.web;
 
 import com.example.airsofttechhelper.part.application.port.ReplicaPartUseCase;
 import com.example.airsofttechhelper.part.application.port.ReplicaPartUseCase.CreateReplicaPartCommand;
+import com.example.airsofttechhelper.part.application.port.ReplicaPartUseCase.UpdateNotesResponse;
+import com.example.airsofttechhelper.part.application.port.ReplicaPartUseCase.UpdateReplicaPartNotesCommand;
 import com.example.airsofttechhelper.part.domain.ReplicaPart;
 import com.example.airsofttechhelper.web.CreatedURI;
 import lombok.AllArgsConstructor;
 import lombok.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -24,6 +29,7 @@ public class ReplicaPartsController {
 
     private final ReplicaPartUseCase replicaPartService;
 
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/")
     public ResponseEntity<Object> getAll(@RequestParam Optional<Long> replicaId){
         if(replicaId.isPresent()){
@@ -45,30 +51,25 @@ public class ReplicaPartsController {
                 rp.getReplica().getId(), rp.getNotes(), rp.getCreatedAt());
     }
 
-    @PostMapping("/{partId}")
-    public ResponseEntity<Object> addReplicaPartToExistingPart(@RequestBody @Valid RestAddReplicaPartCommand command) {
-        ReplicaPart replicaPart = replicaPartService.addReplicaPart(command.toCreateReplicaPartCommand());
-        URI uri = new CreatedURI("/replica-part/" + replicaPart.getId()).uri();
-        return ResponseEntity.created(uri).build();
-    }
-
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @PostMapping("/")
-    public ResponseEntity<Object> addReplicaPart(@RequestBody @Valid RestAddPartAndReplicaPartCommand command) {
-        ReplicaPart replicaPart = replicaPartService.addReplicaPart(command.toCreateReplicaPartCommand());
+    public ResponseEntity<Object> addReplicaPart(
+            @RequestParam Optional<Long> partId,
+            @RequestBody @Valid RestAddPartAndReplicaPartCommand command
+    ){
+        ReplicaPart replicaPart = replicaPartService.addReplicaPart(command.toCreateReplicaPartCommand(partId));
         URI uri = new CreatedURI("/replica-part/" + replicaPart.getId()).uri();
         return ResponseEntity.created(uri).build();
     }
 
-    @Value
-    static class RestAddReplicaPartCommand{
-        @NotNull
-        Long replicaId;
-        @NotNull
-        Long partId;
-        @NotBlank
-        String notes;
-        CreateReplicaPartCommand toCreateReplicaPartCommand(){
-            return new CreateReplicaPartCommand(replicaId, Optional.of(partId), null, null, notes);
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @PatchMapping("/notes")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void updateReplicaPartNotes(@Valid @RequestBody RestUpdateNotesCommand command){
+        UpdateNotesResponse updateNotesResponse = replicaPartService.updateNotes(command.toUpdateNotesCommand());
+        if(!updateNotesResponse.isSuccess()){
+            String errors = String.join(", ", updateNotesResponse.getErrors());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errors);
         }
     }
 
@@ -82,8 +83,20 @@ public class ReplicaPartsController {
         String category;
         @NotBlank
         String notes;
-        CreateReplicaPartCommand toCreateReplicaPartCommand(){
-            return new CreateReplicaPartCommand(replicaId, Optional.empty(), name, category, notes);
+        CreateReplicaPartCommand toCreateReplicaPartCommand(Optional<Long> partId){
+            return new CreateReplicaPartCommand(replicaId, partId, name, category, notes);
+        }
+    }
+
+    @Value
+    static class RestUpdateNotesCommand{
+        @NotNull
+        Long replicaPartId;
+        @NotBlank
+        String notes;
+
+        UpdateReplicaPartNotesCommand toUpdateNotesCommand(){
+            return new UpdateReplicaPartNotesCommand(replicaPartId, notes);
         }
     }
 }
