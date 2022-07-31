@@ -6,7 +6,7 @@ import lombok.Value;
 import java.util.Collections;
 import java.util.List;
 
-public interface ReplicaUseCase {
+public interface DetailedReplicaUseCase {
     Replica findById(Long id);
     UpdateReplicaResponse updateReplica(UpdateReplicaCommand command);
     void deleteReplica(Long id);

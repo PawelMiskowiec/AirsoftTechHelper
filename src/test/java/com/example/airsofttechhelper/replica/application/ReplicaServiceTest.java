@@ -1,10 +1,9 @@
 package com.example.airsofttechhelper.replica.application;
 
 import com.example.airsofttechhelper.replica.application.port.BasicReplicaUseCase;
-import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase;
+import com.example.airsofttechhelper.replica.application.port.DetailedReplicaUseCase;
 import com.example.airsofttechhelper.replica.db.ReplicaJpaRepository;
 import com.example.airsofttechhelper.replica.domain.Replica;
-import com.example.airsofttechhelper.replica.web.dto.RestDetailedReplica;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -22,7 +21,7 @@ class ReplicaServiceTest {
     BasicBasicReplicaService basicReplicaService;
 
     @Autowired
-    ReplicaService replicaService;
+    DetailedReplicaService replicaService;
 
     @Autowired
     ReplicaJpaRepository replicaJpaRepository;
@@ -45,10 +44,10 @@ class ReplicaServiceTest {
         //given
         Replica replica = givenReplica("TR16 308SR", "example@gmail.com");
         String newName = "TR16 308WH";
-        String newDescription = "Owner has paid extra to be done quickly";
+        String newDescription = "ReplicaOwner has paid extra to be done quickly";
         String newAdditionalEquipment = "5 mags";
-        ReplicaUseCase.UpdateReplicaCommand updateCommand =
-                new ReplicaUseCase.UpdateReplicaCommand(replica.getId(), newName, newDescription, newAdditionalEquipment);
+        DetailedReplicaUseCase.UpdateReplicaCommand updateCommand =
+                new DetailedReplicaUseCase.UpdateReplicaCommand(replica.getId(), newName, newDescription, newAdditionalEquipment);
         //when
         replicaService.updateReplica(updateCommand);
 
@@ -65,8 +64,8 @@ class ReplicaServiceTest {
         //given
         Replica replica = givenReplica("TR16 308SR", "example@gmail.com");
         String newAdditionalEquipment = "5 mags";
-        ReplicaUseCase.UpdateReplicaCommand updateCommand =
-                new ReplicaUseCase.UpdateReplicaCommand(replica.getId(), null, null, newAdditionalEquipment);
+        DetailedReplicaUseCase.UpdateReplicaCommand updateCommand =
+                new DetailedReplicaUseCase.UpdateReplicaCommand(replica.getId(), null, null, newAdditionalEquipment);
         //when
         replicaService.updateReplica(updateCommand);
 

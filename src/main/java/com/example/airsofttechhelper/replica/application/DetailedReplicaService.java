@@ -1,6 +1,6 @@
 package com.example.airsofttechhelper.replica.application;
 
-import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase;
+import com.example.airsofttechhelper.replica.application.port.DetailedReplicaUseCase;
 import com.example.airsofttechhelper.replica.db.ReplicaJpaRepository;
 import com.example.airsofttechhelper.replica.domain.Replica;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 @Transactional
-public class ReplicaService implements ReplicaUseCase {
+public class DetailedReplicaService implements DetailedReplicaUseCase {
 
     private final ReplicaJpaRepository repository;
 

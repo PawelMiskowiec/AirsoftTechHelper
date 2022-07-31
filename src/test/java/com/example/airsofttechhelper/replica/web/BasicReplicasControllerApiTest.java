@@ -15,6 +15,9 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -23,6 +26,7 @@ import java.util.Optional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
+@WithMockUser
 class BasicReplicasControllerApiTest {
 
     @LocalServerPort
@@ -38,11 +42,11 @@ class BasicReplicasControllerApiTest {
     void getAllReplicas() {
         //given
         RestBasicReplica replica = new RestBasicReplica(1L, "gg tr16", ReplicaStatus.TESTING, LocalDateTime.now(),
-                "owner@gmail.com");
+                "replicaOwner@gmail.com");
         RestBasicReplica replica2 = new RestBasicReplica(1L, "ea m4", ReplicaStatus.INPROGRESS, LocalDateTime.now(),
-                "owner@gmail.com");
+                "replicaOwner@gmail.com");
 
-        Mockito.when(basicReplicasController.getAllReplicas(Optional.empty())).thenReturn(List.of(replica, replica2));
+        Mockito.when(basicReplicasController.getAllUsersReplicas(Optional.empty())).thenReturn(List.of(replica, replica2));
         ParameterizedTypeReference<List<RestBasicReplica>> typeReference = new ParameterizedTypeReference<>(){};
 
         //when
@@ -58,8 +62,8 @@ class BasicReplicasControllerApiTest {
     void getReplicaById(){
         //given
         RestBasicReplica replica = new RestBasicReplica(1L, "gg tr16", ReplicaStatus.TESTING, LocalDateTime.now(),
-                "owner@gmail.com");
-        Mockito.when(basicReplicasController.getReplicaById(1L)).thenReturn(ResponseEntity.ok(replica));
+                "replicaOwner@gmail.com");
+        Mockito.when(basicReplicasController.getReplicaById(1L, )).thenReturn(ResponseEntity.ok(replica));
 
         //when
         String url = "http://localhost:" + port + "/replicas-list/1";

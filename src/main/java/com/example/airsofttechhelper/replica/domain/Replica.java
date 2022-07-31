@@ -2,6 +2,7 @@ package com.example.airsofttechhelper.replica.domain;
 
 import com.example.airsofttechhelper.jpa.BaseEntity;
 import com.example.airsofttechhelper.part.domain.ReplicaPart;
+import com.example.airsofttechhelper.user.domain.UserEntity;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -28,14 +29,17 @@ public class Replica extends BaseEntity {
 
     private String additionalEquipment;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private UserEntity tech;
+
     @Builder.Default
     @Enumerated(EnumType.STRING)
     private ReplicaStatus status = ReplicaStatus.NEW;
 
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST},
-            fetch = FetchType.EAGER)
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
-    private Owner owner;
+    private ReplicaOwner replicaOwner;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "replica", orphanRemoval = true)
     private Set<ReplicaPart> replicaParts = new HashSet<>(); //ToDo - Test how hashSets are working with new HashCode impl
@@ -49,18 +53,18 @@ public class Replica extends BaseEntity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public Replica(String name, String description, String additionalEquipment, Owner owner) {
+    public Replica(String name, String description, String additionalEquipment, ReplicaOwner replicaOwner) {
         this.name = name;
         this.description = description;
         this.additionalEquipment = additionalEquipment;
-        this.owner = owner;
+        this.replicaOwner = replicaOwner;
     }
 
-    public void addReplicaPart(ReplicaPart replicaPart){
+    public void addReplicaPart(ReplicaPart replicaPart) {
         replicaParts.add(replicaPart);
     }
 
-    public void updateStatus(ReplicaStatus newStatus){
+    public void updateStatus(ReplicaStatus newStatus) {
         this.status = status.changeStatus(newStatus);
     }
 }

@@ -2,7 +2,7 @@ package com.example.airsofttechhelper.replica.web;
 
 import com.example.airsofttechhelper.part.domain.ReplicaPart;
 import com.example.airsofttechhelper.part.web.RestReplicaPart;
-import com.example.airsofttechhelper.replica.application.port.ReplicaUseCase;
+import com.example.airsofttechhelper.replica.application.port.DetailedReplicaUseCase;
 import com.example.airsofttechhelper.replica.application.port.ToDoUseCase;
 import com.example.airsofttechhelper.replica.domain.Replica;
 import com.example.airsofttechhelper.replica.domain.ToDo;
@@ -16,7 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -32,14 +32,14 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class DetailedReplicaController {
 
-    private final ReplicaUseCase replicaService;
+    private final DetailedReplicaUseCase replicaService;
     private final ToDoUseCase toDoService;
 
     private final UserSecurity userSecurity;
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/{id}")
-    public ResponseEntity<RestDetailedReplica> getById(@PathVariable Long id, @AuthenticationPrincipal User user) {
+    public ResponseEntity<RestDetailedReplica> getById(@PathVariable Long id, @AuthenticationPrincipal UserDetails user) {
         RestDetailedReplica restDetailedReplica = toRestDetailedReplica(replicaService.findById(id));
         URI uri = new CreatedURI("/replica/" + id).uri();
         return ResponseEntity.created(uri).build();
@@ -50,7 +50,7 @@ public class DetailedReplicaController {
                 replica.getId(),
                 replica.getName(),
                 replica.getAdditionalEquipment(),
-                replica.getOwner().getName(),
+                replica.getReplicaOwner().getName(),
                 replica.getCreatedAt(),
                 replica.getUpdatedAt(),
                 toRestReplicaParts(replica.getReplicaParts(), replica.getId()),
@@ -85,7 +85,7 @@ public class DetailedReplicaController {
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @PostMapping("/todo")
-    public ResponseEntity<Object> addToDo(@Valid @RequestBody RestToDoCommand command, @AuthenticationPrincipal User user) {
+    public ResponseEntity<Object> addToDo(@Valid @RequestBody RestToDoCommand command, @AuthenticationPrincipal UserDetails user) {
         ToDo toDo = toDoService.addToDo(command.toCreateToDoCommand());
         URI uri = new CreatedURI("/replica/" + command.replicaId + "/todo/" + toDo.getId()).uri();
         return ResponseEntity.created(uri).build();
@@ -93,7 +93,7 @@ public class DetailedReplicaController {
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/todo/{id}")
-    public ResponseEntity<RestToDo> getToDoById(@PathVariable Long id, @AuthenticationPrincipal User user) {
+    public ResponseEntity<RestToDo> getToDoById(@PathVariable Long id, @AuthenticationPrincipal UserDetails user) {
         return toDoService
                 .findOneById(id)
                 .map(toDo -> ResponseEntity.ok(toRestToDo(toDo)))

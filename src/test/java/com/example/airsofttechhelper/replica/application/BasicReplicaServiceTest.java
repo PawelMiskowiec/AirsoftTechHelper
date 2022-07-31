@@ -33,7 +33,7 @@ public class BasicReplicaServiceTest {
     @Test
     public void userCanAddReplica(){
         //given
-        CreateOwnerCommand ownerCommand = toCreateOwnerCommand("pawel@owner.com");
+        CreateOwnerCommand ownerCommand = toCreateOwnerCommand("pawel@replicaOwner.com");
         CreateReplicaCommand command = new CreateReplicaCommand(
                 "GG tr16 308 sr",
                 "this replica is supposed to be fully upgraded",

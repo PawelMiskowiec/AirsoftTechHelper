@@ -4,7 +4,7 @@ import com.example.airsofttechhelper.part.application.ReplicaPartService;
 import com.example.airsofttechhelper.part.application.port.ReplicaPartUseCase;
 import com.example.airsofttechhelper.part.domain.ReplicaPart;
 import com.example.airsofttechhelper.replica.application.BasicBasicReplicaService;
-import com.example.airsofttechhelper.replica.application.ReplicaService;
+import com.example.airsofttechhelper.replica.application.DetailedReplicaService;
 import com.example.airsofttechhelper.replica.application.port.BasicReplicaUseCase;
 import com.example.airsofttechhelper.replica.domain.Replica;
 import com.example.airsofttechhelper.replica.application.ToDoService;
@@ -32,7 +32,7 @@ class DetailedReplicaControllerIT {
     ToDoService toDoService;
 
     @Autowired
-    ReplicaService replicaService;
+    DetailedReplicaService replicaService;
 
     @Autowired
     BasicBasicReplicaService basicReplicaService;

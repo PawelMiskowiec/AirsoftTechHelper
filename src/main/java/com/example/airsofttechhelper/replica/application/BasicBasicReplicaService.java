@@ -3,9 +3,11 @@ package com.example.airsofttechhelper.replica.application;
 import com.example.airsofttechhelper.replica.application.port.BasicReplicaUseCase;
 import com.example.airsofttechhelper.replica.db.OwnerJpaRepository;
 import com.example.airsofttechhelper.replica.db.ReplicaJpaRepository;
-import com.example.airsofttechhelper.replica.domain.Owner;
+import com.example.airsofttechhelper.replica.domain.ReplicaOwner;
 import com.example.airsofttechhelper.replica.domain.Replica;
 import com.example.airsofttechhelper.replica.domain.ReplicaStatus;
+import com.example.airsofttechhelper.user.db.UserEntityRepository;
+import com.example.airsofttechhelper.user.domain.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +22,9 @@ import java.util.Optional;
 public class BasicBasicReplicaService implements BasicReplicaUseCase {
 
     private final ReplicaJpaRepository repository;
-
     private final OwnerJpaRepository ownerJpaRepository;
+    private final UserEntityRepository userEntityRepository;
+
 
     @Override
     public List<Replica> findAll() {
@@ -54,7 +57,7 @@ public class BasicBasicReplicaService implements BasicReplicaUseCase {
                     return UpdateStatusResponse.SUCCESS;
                 }).orElse(
                         new UpdateStatusResponse(false,
-                        Collections.singletonList("Replica with id " + command.getReplicaId() + "not found"))
+                                Collections.singletonList("Replica with id " + command.getReplicaId() + "not found"))
                 );
     }
 
@@ -67,23 +70,27 @@ public class BasicBasicReplicaService implements BasicReplicaUseCase {
     }
 
     private Replica toReplica(CreateReplicaCommand command) {
-        Owner owner = getOrCreateOwner(command.getOwnerCommand());
+        UserEntity tech = userEntityRepository
+                .findByUsername(command.getUser().getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Couldn't find user " + command.getUser().getUsername()));
+        ReplicaOwner replicaOwner = getOrCreateOwner(command.getOwnerCommand());
         return Replica.builder()
                 .name(command.getName())
                 .description(command.getDescription())
                 .additionalEquipment(command.getAdditionalEquipment())
-                .owner(owner)
+                .replicaOwner(replicaOwner)
+                .tech(tech)
                 .build();
     }
 
-    private Owner getOrCreateOwner(CreateOwnerCommand ownerCommand) {
+    private ReplicaOwner getOrCreateOwner(CreateOwnerCommand ownerCommand) {
         return ownerJpaRepository
                 .findByEmail(ownerCommand.getEmail())
                 .orElse(toOwner(ownerCommand));
     }
 
-    private Owner toOwner(CreateOwnerCommand command) {
-        return new Owner(
+    private ReplicaOwner toOwner(CreateOwnerCommand command) {
+        return new ReplicaOwner(
                 command.getName(),
                 command.getPhone(),
                 command.getStreet(),
