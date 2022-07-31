@@ -37,7 +37,7 @@ public class Replica extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ReplicaStatus status = ReplicaStatus.NEW;
 
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "owner_id")
     private ReplicaOwner replicaOwner;
 

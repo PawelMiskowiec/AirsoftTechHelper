@@ -43,12 +43,12 @@ public class BasicReplicasController {
         if (status.isPresent()) {
             replicas = replicaService.findByStatus(status.get())
                     .stream()
-                    .map(this::toRestListReplica)
+                    .map(this::toRestBasicReplica)
                     .collect(Collectors.toList());
         }
         replicas = replicaService.findAll()
                 .stream()
-                .map(this::toRestListReplica)
+                .map(this::toRestBasicReplica)
                 .collect(Collectors.toList());
 
         return replicas;
@@ -56,20 +56,20 @@ public class BasicReplicasController {
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/{id}")
-    public ResponseEntity<?> getReplicaById(@PathVariable Long id, @AuthenticationPrincipal UserDetails user) {
+    public ResponseEntity<RestBasicReplica> getReplicaById(@PathVariable Long id, @AuthenticationPrincipal UserDetails user) {
         return replicaService.findOneById(id)
                 .map(r -> {
-                    if (userSecurity.isOwnerOrAdmin(r.getTech().getUsername(), user)) {
-                        return ResponseEntity.ok(toRestListReplica(r));
+                    if (!userSecurity.isOwnerOrAdmin(r.getTech().getUsername(), user)) {
+                        throw new ResponseStatusException(HttpStatus.FORBIDDEN);
                     }
-                    return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                    return ResponseEntity.ok(toRestBasicReplica(r));
                 }).orElse(
                         ResponseEntity.badRequest().build()
                 );
     }
 
 
-    private RestBasicReplica toRestListReplica(Replica replica) {
+    private RestBasicReplica toRestBasicReplica(Replica replica) {
         return new RestBasicReplica(replica.getId(), replica.getName(), replica.getStatus(),
                 replica.getCreatedAt(), replica.getReplicaOwner().getEmail());
     }

@@ -10,10 +10,14 @@ import com.example.airsofttechhelper.replica.domain.Replica;
 import com.example.airsofttechhelper.replica.application.ToDoService;
 import com.example.airsofttechhelper.replica.application.port.ToDoUseCase;
 import com.example.airsofttechhelper.replica.domain.ToDo;
+import com.example.airsofttechhelper.security.UserEntityDetails;
+import com.example.airsofttechhelper.user.db.UserEntityRepository;
+import com.example.airsofttechhelper.user.domain.UserEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.Optional;
@@ -36,6 +40,9 @@ class DetailedReplicaControllerIT {
 
     @Autowired
     BasicBasicReplicaService basicReplicaService;
+
+    @Autowired
+    UserEntityRepository userEntityRepository;
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
@@ -74,9 +81,16 @@ class DetailedReplicaControllerIT {
                 replicaName,
                 "this replica is supposed to be fully upgraded",
                 "3 mid-cap magazines",
-                ownerCommand
+                ownerCommand,
+                givenUserDetails()
         );
         return basicReplicaService.addReplica(command);
+    }
+
+    private UserDetails givenUserDetails() {
+        UserEntity userEntity = new UserEntity("example@tech.com", "123");
+        userEntityRepository.save(userEntity);
+        return new UserEntityDetails(userEntity);
     }
 
     private BasicReplicaUseCase.CreateOwnerCommand toCreateOwnerCommand(String email) {

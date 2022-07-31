@@ -5,11 +5,15 @@ import com.example.airsofttechhelper.replica.db.OwnerJpaRepository;
 import com.example.airsofttechhelper.replica.db.ReplicaJpaRepository;
 import com.example.airsofttechhelper.replica.domain.Replica;
 import com.example.airsofttechhelper.replica.domain.ReplicaStatus;
+import com.example.airsofttechhelper.security.UserEntityDetails;
+import com.example.airsofttechhelper.user.db.UserEntityRepository;
+import com.example.airsofttechhelper.user.domain.UserEntity;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 
 import static com.example.airsofttechhelper.replica.application.port.BasicReplicaUseCase.*;
@@ -30,16 +34,20 @@ public class BasicReplicaServiceTest {
     @Autowired
     BasicBasicReplicaService basicReplicaService;
 
+    @Autowired
+    UserEntityRepository userEntityRepository;
+
     @Test
-    public void userCanAddReplica(){
+    public void userCanAddReplica() {
         //given
         CreateOwnerCommand ownerCommand = toCreateOwnerCommand("pawel@replicaOwner.com");
         CreateReplicaCommand command = new CreateReplicaCommand(
                 "GG tr16 308 sr",
                 "this replica is supposed to be fully upgraded",
                 "3 mid-cap magazines",
-                ownerCommand
-                );
+                ownerCommand,
+                givenUserDetails()
+        );
 
         //when
         Replica replica = basicReplicaService.addReplica(command);
@@ -50,7 +58,7 @@ public class BasicReplicaServiceTest {
     }
 
     @Test
-    public void userCanChangeReplicaStatusFromNewToInProgress(){
+    public void userCanChangeReplicaStatusFromNewToInProgress() {
         //given
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
         UpdateReplicaStatusCommand command = new UpdateReplicaStatusCommand(replica.getId(), "INPROGRESS");
@@ -64,7 +72,7 @@ public class BasicReplicaServiceTest {
     }
 
     @Test
-    public void userCannotChangeFinishedReplicaStatus(){
+    public void userCannotChangeFinishedReplicaStatus() {
         //given
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
         UpdateReplicaStatusCommand testingCommand = new UpdateReplicaStatusCommand(replica.getId(), "TESTING");
@@ -82,7 +90,7 @@ public class BasicReplicaServiceTest {
     }
 
     @Test
-    public void userCannotChangeInProgressReplicaStatusToNew(){
+    public void userCannotChangeInProgressReplicaStatusToNew() {
         //given
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
         UpdateReplicaStatusCommand newCommand = new UpdateReplicaStatusCommand(replica.getId(), "NEW");
@@ -98,15 +106,22 @@ public class BasicReplicaServiceTest {
         Assertions.assertTrue(exception.getMessage().contains("Unable to change the replica status from INPROGRESS to NEW"));
     }
 
-    private Replica givenReplica(String replicaName, String ownerEmail){
+    private Replica givenReplica(String replicaName, String ownerEmail) {
         BasicReplicaUseCase.CreateOwnerCommand ownerCommand = toCreateOwnerCommand(ownerEmail);
         BasicReplicaUseCase.CreateReplicaCommand command = new BasicReplicaUseCase.CreateReplicaCommand(
                 replicaName,
                 "this replica is supposed to be fully upgraded",
                 "3 mid-cap magazines",
-                ownerCommand
+                ownerCommand,
+                givenUserDetails()
         );
         return basicReplicaService.addReplica(command);
+    }
+
+    private UserDetails givenUserDetails() {
+        UserEntity userEntity = new UserEntity("example@tech.com", "123");
+        userEntityRepository.save(userEntity);
+        return new UserEntityDetails(userEntity);
     }
 
     private BasicReplicaUseCase.CreateOwnerCommand toCreateOwnerCommand(String email) {

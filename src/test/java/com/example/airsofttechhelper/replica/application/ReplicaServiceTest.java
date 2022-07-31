@@ -4,10 +4,14 @@ import com.example.airsofttechhelper.replica.application.port.BasicReplicaUseCas
 import com.example.airsofttechhelper.replica.application.port.DetailedReplicaUseCase;
 import com.example.airsofttechhelper.replica.db.ReplicaJpaRepository;
 import com.example.airsofttechhelper.replica.domain.Replica;
+import com.example.airsofttechhelper.security.UserEntityDetails;
+import com.example.airsofttechhelper.user.db.UserEntityRepository;
+import com.example.airsofttechhelper.user.domain.UserEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,6 +29,9 @@ class ReplicaServiceTest {
 
     @Autowired
     ReplicaJpaRepository replicaJpaRepository;
+
+    @Autowired
+    UserEntityRepository userEntityRepository;
 
     @Test
     void findById() {
@@ -75,15 +82,22 @@ class ReplicaServiceTest {
 
     }
 
-    private Replica givenReplica(String replicaName, String ownerEmail){
+    private Replica givenReplica(String replicaName, String ownerEmail) {
         BasicReplicaUseCase.CreateOwnerCommand ownerCommand = toCreateOwnerCommand(ownerEmail);
         BasicReplicaUseCase.CreateReplicaCommand command = new BasicReplicaUseCase.CreateReplicaCommand(
                 replicaName,
                 "this replica is supposed to be fully upgraded",
                 "3 mid-cap magazines",
-                ownerCommand
+                ownerCommand,
+                givenUserDetails()
         );
         return basicReplicaService.addReplica(command);
+    }
+
+    private UserDetails givenUserDetails() {
+        UserEntity userEntity = new UserEntity("example@tech.com", "123");
+        userEntityRepository.save(userEntity);
+        return new UserEntityDetails(userEntity);
     }
 
     private BasicReplicaUseCase.CreateOwnerCommand toCreateOwnerCommand(String email) {

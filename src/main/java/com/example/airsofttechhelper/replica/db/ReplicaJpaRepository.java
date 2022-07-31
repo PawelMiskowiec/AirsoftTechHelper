@@ -13,7 +13,7 @@ public interface ReplicaJpaRepository extends JpaRepository<Replica, Long> {
     List<Replica> findByStatusIsContaining(ReplicaStatus status);
 
     @Query(" SELECT r FROM Replica r " +
-            " LEFT JOIN FETCH r.replicaParts as rp JOIN FETCH rp.part LEFT JOIN FETCH r.toDos JOIN FETCH r.owner" +
+            " LEFT JOIN FETCH r.replicaParts as rp JOIN FETCH rp.part LEFT JOIN FETCH r.toDos JOIN FETCH r.replicaOwner" +
             " WHERE r.id = :id ")
     Optional<Replica> findOneByIdEager(@Param("id") Long id);
 }

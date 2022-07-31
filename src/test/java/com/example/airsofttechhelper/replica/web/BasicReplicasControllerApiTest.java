@@ -2,6 +2,9 @@ package com.example.airsofttechhelper.replica.web;
 
 import com.example.airsofttechhelper.replica.domain.ReplicaStatus;
 import com.example.airsofttechhelper.replica.web.dto.RestBasicReplica;
+import com.example.airsofttechhelper.security.UserEntityDetails;
+import com.example.airsofttechhelper.user.db.UserEntityRepository;
+import com.example.airsofttechhelper.user.domain.UserEntity;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -15,18 +18,21 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
-@WithMockUser
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class BasicReplicasControllerApiTest {
 
     @LocalServerPort
@@ -38,6 +44,9 @@ class BasicReplicasControllerApiTest {
     @Autowired
     TestRestTemplate restTemplate;
 
+    @Autowired
+    UserEntityRepository userEntityRepository;
+
     @Test
     void getAllReplicas() {
         //given
@@ -45,8 +54,9 @@ class BasicReplicasControllerApiTest {
                 "replicaOwner@gmail.com");
         RestBasicReplica replica2 = new RestBasicReplica(1L, "ea m4", ReplicaStatus.INPROGRESS, LocalDateTime.now(),
                 "replicaOwner@gmail.com");
+        UserDetails userDetails = givenUserDetails();
 
-        Mockito.when(basicReplicasController.getAllUsersReplicas(Optional.empty())).thenReturn(List.of(replica, replica2));
+        Mockito.when(basicReplicasController.getAllUsersReplicas(Optional.empty(), userDetails)).thenReturn(List.of(replica, replica2));
         ParameterizedTypeReference<List<RestBasicReplica>> typeReference = new ParameterizedTypeReference<>(){};
 
         //when
@@ -63,7 +73,8 @@ class BasicReplicasControllerApiTest {
         //given
         RestBasicReplica replica = new RestBasicReplica(1L, "gg tr16", ReplicaStatus.TESTING, LocalDateTime.now(),
                 "replicaOwner@gmail.com");
-        Mockito.when(basicReplicasController.getReplicaById(1L, )).thenReturn(ResponseEntity.ok(replica));
+        UserDetails userDetails = givenUserDetails();
+        Mockito.when(basicReplicasController.getReplicaById(1L, userDetails)).thenReturn(ResponseEntity.ok(replica));
 
         //when
         String url = "http://localhost:" + port + "/replicas-list/1";
@@ -73,5 +84,11 @@ class BasicReplicasControllerApiTest {
         //then
         Assertions.assertEquals(HttpStatus.OK.toString(), response.getStatusCode().toString());
         Assertions.assertEquals(replica.getName(), response.getBody().getName());
+    }
+
+    private UserDetails givenUserDetails() {
+        UserEntity userEntity = new UserEntity("example@tech.com", "123");
+        userEntityRepository.save(userEntity);
+        return new UserEntityDetails(userEntity);
     }
 }
