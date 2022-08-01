@@ -1,0 +1,16 @@
+spring:
+  config:
+    activate:
+      on-profile: "generatesql"
+  flyway.enabled: false
+  jpa.properties.javax.persistence.schema-generation.scripts:
+    action: create
+    create-target: create.sql
+    create-source: metadata
+  datasource:
+    url: jdbc:postgresql://localhost:7432/airsofttechhelper
+    username: admin
+    password: pass123
+    driver-class-name: org.postgresql.Driver
+  jpa.database-platform: org.hibernate.dialect.PostgreSQLDialect
+

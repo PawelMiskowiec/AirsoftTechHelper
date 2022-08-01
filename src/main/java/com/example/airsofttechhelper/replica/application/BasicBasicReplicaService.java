@@ -28,7 +28,7 @@ public class BasicBasicReplicaService implements BasicReplicaUseCase {
 
     @Override
     public List<Replica> findAll() {
-        return repository.findAll();
+        return repository.findAllFetchOwnerAndTech();
     }
 
     @Override

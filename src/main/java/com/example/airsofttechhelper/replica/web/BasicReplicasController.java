@@ -43,11 +43,13 @@ public class BasicReplicasController {
         if (status.isPresent()) {
             replicas = replicaService.findByStatus(status.get())
                     .stream()
+                    .filter(replica -> replica.getTech().getUsername().equalsIgnoreCase(user.getUsername()))
                     .map(this::toRestBasicReplica)
                     .collect(Collectors.toList());
         }
         replicas = replicaService.findAll()
                 .stream()
+                .filter(replica -> replica.getTech().getUsername().equalsIgnoreCase(user.getUsername()))
                 .map(this::toRestBasicReplica)
                 .collect(Collectors.toList());
 
