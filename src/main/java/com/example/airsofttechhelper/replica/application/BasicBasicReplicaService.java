@@ -27,13 +27,13 @@ public class BasicBasicReplicaService implements BasicReplicaUseCase {
 
 
     @Override
-    public List<Replica> findAll() {
-        return repository.findAllFetchOwnerAndTech();
+    public List<Replica> findAllUserReplicas(String username) {
+        return repository.findAllByUsernameFetchOwnerAndTech(username);
     }
 
     @Override
-    public List<Replica> findByStatus(String status) {
-        return repository.findByStatusIsContaining(toReplicaStatus(status));
+    public List<Replica> findAllUserReplicasByStatus(String status, String username) {
+        return repository.findAllByStatusAndUsername(status, username);
     }
 
     @Override

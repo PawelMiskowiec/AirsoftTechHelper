@@ -10,14 +10,17 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReplicaJpaRepository extends JpaRepository<Replica, Long> {
-    List<Replica> findByStatusIsContaining(ReplicaStatus status);
+    @Query(" SELECT r FROM Replica r " +
+            " JOIN FETCH r.replicaOwner JOIN FETCH r.tech " +
+            " WHERE r.tech.username = :username AND r.status = :status ")
+    List<Replica> findAllByStatusAndUsername(String status, String username);
 
     @Query(" SELECT r FROM Replica r " +
             " JOIN FETCH r.replicaOwner JOIN FETCH r.tech ")
-    List<Replica> findAllFetchOwnerAndTech();
+    List<Replica> findAllByUsernameFetchOwnerAndTech(String username);
 
     @Query(" SELECT r FROM Replica r " +
             " LEFT JOIN FETCH r.replicaParts as rp JOIN FETCH rp.part LEFT JOIN FETCH r.toDos JOIN FETCH r.replicaOwner " +
             " WHERE r.id = :id ")
-    Optional<Replica> findOneByIdEager(@Param("id") Long id);
+    Optional<Replica> findOneByIdEager(Long id);
 }

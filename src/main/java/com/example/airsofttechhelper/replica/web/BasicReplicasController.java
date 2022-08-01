@@ -41,13 +41,13 @@ public class BasicReplicasController {
     public List<RestBasicReplica> getAllUsersReplicas(@RequestParam Optional<String> status, @AuthenticationPrincipal UserDetails user) {
         List<RestBasicReplica> replicas;
         if (status.isPresent()) {
-            replicas = replicaService.findByStatus(status.get())
+            replicas = replicaService.findAllUserReplicasByStatus(status.get(), user.getUsername())
                     .stream()
                     .filter(replica -> replica.getTech().getUsername().equalsIgnoreCase(user.getUsername()))
                     .map(this::toRestBasicReplica)
                     .collect(Collectors.toList());
         }
-        replicas = replicaService.findAll()
+        replicas = replicaService.findAllUserReplicas(user.getUsername())
                 .stream()
                 .filter(replica -> replica.getTech().getUsername().equalsIgnoreCase(user.getUsername()))
                 .map(this::toRestBasicReplica)

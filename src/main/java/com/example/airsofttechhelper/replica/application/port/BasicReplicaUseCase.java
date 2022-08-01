@@ -10,8 +10,8 @@ import java.util.Optional;
 import static java.util.Collections.emptyList;
 
 public interface BasicReplicaUseCase {
-    List<Replica> findAll();
-    List<Replica> findByStatus(String status);
+    List<Replica> findAllUserReplicas(String username);
+    List<Replica> findAllUserReplicasByStatus(String status, String username);
     Optional<Replica> findOneById(Long id);
     Replica addReplica(CreateReplicaCommand command);
     UpdateStatusResponse updateReplicaStatus(UpdateReplicaStatusCommand command);
