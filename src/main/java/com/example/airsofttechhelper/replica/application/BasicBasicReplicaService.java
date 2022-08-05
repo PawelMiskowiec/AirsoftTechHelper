@@ -6,6 +6,7 @@ import com.example.airsofttechhelper.replica.db.ReplicaJpaRepository;
 import com.example.airsofttechhelper.replica.domain.ReplicaOwner;
 import com.example.airsofttechhelper.replica.domain.Replica;
 import com.example.airsofttechhelper.replica.domain.ReplicaStatus;
+import com.example.airsofttechhelper.security.UserSecurity;
 import com.example.airsofttechhelper.user.db.UserEntityRepository;
 import com.example.airsofttechhelper.user.domain.UserEntity;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,7 @@ public class BasicBasicReplicaService implements BasicReplicaUseCase {
     private final ReplicaJpaRepository repository;
     private final OwnerJpaRepository ownerJpaRepository;
     private final UserEntityRepository userEntityRepository;
+    private final UserSecurity userSecurity;
 
 
     @Override
@@ -52,12 +54,22 @@ public class BasicBasicReplicaService implements BasicReplicaUseCase {
         return repository
                 .findById(command.getReplicaId())
                 .map(replica -> {
+                    if(!userSecurity.isOwnerOrAdmin(replica.getTech().getUsername(), command.getUser())){
+                        return new UpdateStatusResponse(
+                                false,
+                                null,
+                                Error.FORBIDDEN
+                        );
+                    }
                     replica.updateStatus(toReplicaStatus(command.getReplicaStatus()));
                     repository.save(replica);
                     return UpdateStatusResponse.SUCCESS;
                 }).orElse(
-                        new UpdateStatusResponse(false,
-                                Collections.singletonList("Replica with id " + command.getReplicaId() + "not found"))
+                        new UpdateStatusResponse(
+                                false,
+                                "Replica with id " + command.getReplicaId() + " not found",
+                                Error.NOT_FOUND
+                        )
                 );
     }
 

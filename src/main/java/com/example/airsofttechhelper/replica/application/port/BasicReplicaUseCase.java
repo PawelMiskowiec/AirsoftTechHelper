@@ -1,7 +1,10 @@
 package com.example.airsofttechhelper.replica.application.port;
 
 import com.example.airsofttechhelper.replica.domain.Replica;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
@@ -39,13 +42,24 @@ public interface BasicReplicaUseCase {
     class UpdateReplicaStatusCommand {
         Long replicaId;
         String replicaStatus;
+        UserDetails user;
     }
 
     @Value
     class UpdateStatusResponse{
-        public static UpdateStatusResponse SUCCESS = new UpdateStatusResponse(true, emptyList());
+        public static UpdateStatusResponse SUCCESS = new UpdateStatusResponse(true, null, null);
         boolean success;
-        List<String> errors;
+        String  errorMessage;
+        Error errorStatus;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    enum Error {
+        NOT_FOUND(HttpStatus.NOT_FOUND),
+        FORBIDDEN(HttpStatus.FORBIDDEN);
+
+        private final HttpStatus status;
     }
 
 }

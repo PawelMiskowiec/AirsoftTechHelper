@@ -87,13 +87,15 @@ public class BasicReplicasController {
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @PatchMapping("/{id}/status")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void updateReplicaStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
+    public void updateReplicaStatus(@PathVariable Long id, @RequestBody Map<String, String> body, @AuthenticationPrincipal UserDetails user) {
         String newStatus = body.get("status");
-        UpdateReplicaStatusCommand command = new UpdateReplicaStatusCommand(id, newStatus);
+        UpdateReplicaStatusCommand command = new UpdateReplicaStatusCommand(id, newStatus, user);
         UpdateStatusResponse response = replicaService.updateReplicaStatus(command);
         if (!response.isSuccess()) {
-            String errorMessage = String.join(", ", response.getErrors());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, errorMessage);
+            if(response.getErrorMessage() == null){
+                throw new ResponseStatusException(response.getErrorStatus().getStatus());
+            }
+            throw new ResponseStatusException(response.getErrorStatus().getStatus(), response.getErrorMessage());
         }
     }
 
