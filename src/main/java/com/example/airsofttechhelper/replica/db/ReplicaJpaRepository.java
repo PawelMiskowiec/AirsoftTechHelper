@@ -20,7 +20,7 @@ public interface ReplicaJpaRepository extends JpaRepository<Replica, Long> {
     List<Replica> findAllByUsernameFetchOwnerAndTech(String username);
 
     @Query(" SELECT r FROM Replica r " +
-            " LEFT JOIN FETCH r.replicaParts as rp JOIN FETCH rp.part LEFT JOIN FETCH r.toDos JOIN FETCH r.replicaOwner " +
+            " LEFT JOIN FETCH r.replicaParts as rp LEFT JOIN FETCH rp.part LEFT JOIN FETCH r.toDos JOIN FETCH r.replicaOwner " +
             " WHERE r.id = :id ")
     Optional<Replica> findOneByIdEager(Long id);
 }

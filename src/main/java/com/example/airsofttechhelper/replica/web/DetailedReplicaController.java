@@ -18,6 +18,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -40,9 +41,15 @@ public class DetailedReplicaController {
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/{id}")
     public ResponseEntity<RestDetailedReplica> getById(@PathVariable Long id, @AuthenticationPrincipal UserDetails user) {
-        RestDetailedReplica restDetailedReplica = toRestDetailedReplica(replicaService.findById(id));
-        URI uri = new CreatedURI("/replica/" + id).uri();
-        return ResponseEntity.created(uri).build();
+        return replicaService.findById(id)
+                .map(r -> {
+                    if (!userSecurity.isOwnerOrAdmin(r.getTech().getUsername(), user)) {
+                        throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+                    }
+                    return ResponseEntity.ok(toRestDetailedReplica(r));
+                }).orElse(
+                        ResponseEntity.notFound().build()
+                );
     }
 
     private RestDetailedReplica toRestDetailedReplica(Replica replica) {

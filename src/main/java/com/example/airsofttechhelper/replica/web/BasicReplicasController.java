@@ -39,21 +39,16 @@ public class BasicReplicasController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<RestBasicReplica> getAllUsersReplicas(@RequestParam Optional<String> status, @AuthenticationPrincipal UserDetails user) {
-        List<RestBasicReplica> replicas;
+        List<Replica> replicas;
         if (status.isPresent()) {
-            replicas = replicaService.findAllUserReplicasByStatus(status.get(), user.getUsername())
-                    .stream()
-                    .filter(replica -> replica.getTech().getUsername().equalsIgnoreCase(user.getUsername()))
-                    .map(this::toRestBasicReplica)
-                    .collect(Collectors.toList());
+            replicas = replicaService.findAllUserReplicasByStatus(status.get(), user.getUsername());
+        } else {
+            replicas = replicaService.findAllUserReplicas(user.getUsername());
         }
-        replicas = replicaService.findAllUserReplicas(user.getUsername())
-                .stream()
+        return replicas.stream()
                 .filter(replica -> replica.getTech().getUsername().equalsIgnoreCase(user.getUsername()))
                 .map(this::toRestBasicReplica)
                 .collect(Collectors.toList());
-
-        return replicas;
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
@@ -66,7 +61,7 @@ public class BasicReplicasController {
                     }
                     return ResponseEntity.ok(toRestBasicReplica(r));
                 }).orElse(
-                        ResponseEntity.badRequest().build()
+                        ResponseEntity.notFound().build()
                 );
     }
 
@@ -92,7 +87,7 @@ public class BasicReplicasController {
         UpdateReplicaStatusCommand command = new UpdateReplicaStatusCommand(id, newStatus, user);
         UpdateStatusResponse response = replicaService.updateReplicaStatus(command);
         if (!response.isSuccess()) {
-            if(response.getErrorMessage() == null){
+            if (response.getErrorMessage() == null) {
                 throw new ResponseStatusException(response.getErrorStatus().getStatus());
             }
             throw new ResponseStatusException(response.getErrorStatus().getStatus(), response.getErrorMessage());

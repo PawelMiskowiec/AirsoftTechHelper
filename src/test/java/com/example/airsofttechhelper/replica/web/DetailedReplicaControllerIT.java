@@ -69,7 +69,7 @@ class DetailedReplicaControllerIT {
 
         System.out.println("\n before printing parts \n");
 
-        replicaService.findById(replica.getId()) //this method manages to fetch all associated entities with one query
+        replicaService.findById(replica.getId()).get() //this method manages to fetch all associated entities with one query
                 .getReplicaParts().forEach(replicaPart1 -> System.out.println(replicaPart1.getPart().getName()));
         System.out.println(replicaPart.hashCode() == replicaPart2.hashCode());
         System.out.println(replicaPart.equals(replicaPart2));

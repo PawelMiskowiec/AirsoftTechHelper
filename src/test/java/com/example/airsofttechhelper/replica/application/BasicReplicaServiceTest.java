@@ -61,7 +61,7 @@ public class BasicReplicaServiceTest {
     public void userCanChangeReplicaStatusFromNewToInProgress() {
         //given
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
-        UpdateReplicaStatusCommand command = new UpdateReplicaStatusCommand(replica.getId(), "INPROGRESS");
+        UpdateReplicaStatusCommand command = new UpdateReplicaStatusCommand(replica.getId(), "INPROGRESS", givenUserDetails());
 
         //when
         basicReplicaService.updateReplicaStatus(command);
@@ -75,8 +75,8 @@ public class BasicReplicaServiceTest {
     public void userCannotChangeFinishedReplicaStatus() {
         //given
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
-        UpdateReplicaStatusCommand testingCommand = new UpdateReplicaStatusCommand(replica.getId(), "TESTING");
-        UpdateReplicaStatusCommand finishedCommand = new UpdateReplicaStatusCommand(replica.getId(), "FINISHED");
+        UpdateReplicaStatusCommand testingCommand = new UpdateReplicaStatusCommand(replica.getId(), "TESTING", givenUserDetails());
+        UpdateReplicaStatusCommand finishedCommand = new UpdateReplicaStatusCommand(replica.getId(), "FINISHED", givenUserDetails());
 
         //when
         basicReplicaService.updateReplicaStatus(testingCommand);
@@ -93,8 +93,8 @@ public class BasicReplicaServiceTest {
     public void userCannotChangeInProgressReplicaStatusToNew() {
         //given
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
-        UpdateReplicaStatusCommand newCommand = new UpdateReplicaStatusCommand(replica.getId(), "NEW");
-        UpdateReplicaStatusCommand inProgressCommand = new UpdateReplicaStatusCommand(replica.getId(), "INPROGRESS");
+        UpdateReplicaStatusCommand newCommand = new UpdateReplicaStatusCommand(replica.getId(), "NEW", givenUserDetails());
+        UpdateReplicaStatusCommand inProgressCommand = new UpdateReplicaStatusCommand(replica.getId(), "INPROGRESS", givenUserDetails());
 
         //when
         basicReplicaService.updateReplicaStatus(inProgressCommand);
