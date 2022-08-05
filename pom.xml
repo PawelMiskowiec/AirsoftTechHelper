@@ -16,7 +16,7 @@
     <properties>
         <java.version>18</java.version>
         <postgres.version>42.3.6</postgres.version>
-        <springdoc.openapi.ui.version>1.6.9</springdoc.openapi.ui.version>
+        <springdoc.openapi.version>1.6.9</springdoc.openapi.version>
         <flyway.version>8.5.12</flyway.version>
     </properties>
     <dependencies>
@@ -36,7 +36,12 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>${springdoc.openapi.ui.version}</version>
+            <version>${springdoc.openapi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-security</artifactId>
+            <version>${springdoc.openapi.version}</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
