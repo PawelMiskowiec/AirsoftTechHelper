@@ -9,6 +9,8 @@ import com.example.airsofttechhelper.security.UserEntityDetails;
 import com.example.airsofttechhelper.user.db.UserEntityRepository;
 import com.example.airsofttechhelper.user.domain.UserEntity;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -37,6 +39,15 @@ public class BasicReplicaServiceTest {
     @Autowired
     UserEntityRepository userEntityRepository;
 
+    UserDetails userDetails;
+
+    @BeforeEach
+    private void prepareUserDetails() {
+        UserEntity userEntity = new UserEntity("example@tech.com", "123");
+        userEntityRepository.save(userEntity);
+        this.userDetails = new UserEntityDetails(userEntity);
+    }
+
     @Test
     public void userCanAddReplica() {
         //given
@@ -46,7 +57,7 @@ public class BasicReplicaServiceTest {
                 "this replica is supposed to be fully upgraded",
                 "3 mid-cap magazines",
                 ownerCommand,
-                givenUserDetails()
+                userDetails
         );
 
         //when
@@ -61,7 +72,7 @@ public class BasicReplicaServiceTest {
     public void userCanChangeReplicaStatusFromNewToInProgress() {
         //given
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
-        UpdateReplicaStatusCommand command = new UpdateReplicaStatusCommand(replica.getId(), "INPROGRESS", givenUserDetails());
+        UpdateReplicaStatusCommand command = new UpdateReplicaStatusCommand(replica.getId(), "INPROGRESS", userDetails);
 
         //when
         basicReplicaService.updateReplicaStatus(command);
@@ -75,8 +86,8 @@ public class BasicReplicaServiceTest {
     public void userCannotChangeFinishedReplicaStatus() {
         //given
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
-        UpdateReplicaStatusCommand testingCommand = new UpdateReplicaStatusCommand(replica.getId(), "TESTING", givenUserDetails());
-        UpdateReplicaStatusCommand finishedCommand = new UpdateReplicaStatusCommand(replica.getId(), "FINISHED", givenUserDetails());
+        UpdateReplicaStatusCommand testingCommand = new UpdateReplicaStatusCommand(replica.getId(), "TESTING", userDetails);
+        UpdateReplicaStatusCommand finishedCommand = new UpdateReplicaStatusCommand(replica.getId(), "FINISHED", userDetails);
 
         //when
         basicReplicaService.updateReplicaStatus(testingCommand);
@@ -93,8 +104,8 @@ public class BasicReplicaServiceTest {
     public void userCannotChangeInProgressReplicaStatusToNew() {
         //given
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
-        UpdateReplicaStatusCommand newCommand = new UpdateReplicaStatusCommand(replica.getId(), "NEW", givenUserDetails());
-        UpdateReplicaStatusCommand inProgressCommand = new UpdateReplicaStatusCommand(replica.getId(), "INPROGRESS", givenUserDetails());
+        UpdateReplicaStatusCommand newCommand = new UpdateReplicaStatusCommand(replica.getId(), "NEW", userDetails);
+        UpdateReplicaStatusCommand inProgressCommand = new UpdateReplicaStatusCommand(replica.getId(), "INPROGRESS", userDetails);
 
         //when
         basicReplicaService.updateReplicaStatus(inProgressCommand);
@@ -113,15 +124,9 @@ public class BasicReplicaServiceTest {
                 "this replica is supposed to be fully upgraded",
                 "3 mid-cap magazines",
                 ownerCommand,
-                givenUserDetails()
+                userDetails
         );
         return basicReplicaService.addReplica(command);
-    }
-
-    private UserDetails givenUserDetails() {
-        UserEntity userEntity = new UserEntity("example@tech.com", "123");
-        userEntityRepository.save(userEntity);
-        return new UserEntityDetails(userEntity);
     }
 
     private BasicReplicaUseCase.CreateOwnerCommand toCreateOwnerCommand(String email) {

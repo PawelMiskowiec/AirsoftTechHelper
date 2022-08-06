@@ -30,7 +30,7 @@ public class Replica extends BaseEntity {
     private String additionalEquipment;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "tech_id")
     private UserEntity tech;
 
     @Builder.Default
