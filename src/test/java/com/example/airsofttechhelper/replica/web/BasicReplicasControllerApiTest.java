@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
@@ -50,11 +51,11 @@ class BasicReplicasControllerApiTest {
     @Test
     void getAllReplicas() {
         //given
+        UserDetails userDetails = givenUserDetails();
         RestBasicReplica replica = new RestBasicReplica(1L, "gg tr16", ReplicaStatus.TESTING, LocalDateTime.now(),
                 "replicaOwner@gmail.com");
         RestBasicReplica replica2 = new RestBasicReplica(1L, "ea m4", ReplicaStatus.INPROGRESS, LocalDateTime.now(),
                 "replicaOwner@gmail.com");
-        UserDetails userDetails = givenUserDetails();
 
         Mockito.when(basicReplicasController.getAllUsersReplicas(Optional.empty(), userDetails)).thenReturn(List.of(replica, replica2));
         ParameterizedTypeReference<List<RestBasicReplica>> typeReference = new ParameterizedTypeReference<>(){};

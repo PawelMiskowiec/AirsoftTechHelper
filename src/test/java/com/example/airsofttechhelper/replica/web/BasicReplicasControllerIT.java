@@ -24,6 +24,7 @@ import java.util.Optional;
 @SpringBootTest
 @AutoConfigureTestDatabase
 @WithMockUser
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class BasicReplicasControllerIT {
     @Autowired
     BasicReplicaUseCase replicaService;
@@ -47,7 +48,6 @@ class BasicReplicasControllerIT {
     //Use of transactional resulted in non-deterministic test execution as the database had some additional replica
     //from method using dirtiesContext
     @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     public void  getAllReplicas(){
         //given
         UserDetails tech = givenUserDetails();

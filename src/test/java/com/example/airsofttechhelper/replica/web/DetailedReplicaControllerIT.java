@@ -45,7 +45,7 @@ class DetailedReplicaControllerIT {
     UserEntityRepository userEntityRepository;
 
     @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     public void getByIdTest(){ //Just playing with hql, lazy initialization, hashCode & equals
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
 

@@ -115,22 +115,22 @@ public class BasicReplicasController {
 
     @Data
     static class RestOwnerCommand {
-        @NotBlank(message = "Please provide an Owners name")
+        @NotBlank(message = "Please provide an Owner name")
         private String name;
 
-        @NotBlank(message = "Please provide an Owners phone number")
+        @NotBlank(message = "Please provide an Owner phone number")
         private String phone;
 
-        @NotBlank(message = "Please provide an Owners street")
+        @NotBlank(message = "Please provide an Owner street")
         private String street;
 
-        @NotBlank(message = "Please provide an Owners city")
+        @NotBlank(message = "Please provide an Owner city")
         private String city;
 
-        @NotBlank(message = "Please provide an Owners zipCode")
+        @NotBlank(message = "Please provide an Owner zipCode")
         private String zipCode;
 
-        @Email(message = "Please provide an Owners email")
+        @Email(message = "Please provide an Owner email")
         private String email;
 
         CreateOwnerCommand toCreateOwnerCommand() {

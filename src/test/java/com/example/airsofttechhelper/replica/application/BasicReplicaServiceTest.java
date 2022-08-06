@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class BasicReplicaServiceTest {
 
     @Autowired
@@ -39,18 +40,10 @@ public class BasicReplicaServiceTest {
     @Autowired
     UserEntityRepository userEntityRepository;
 
-    UserDetails userDetails;
-
-    @BeforeEach
-    private void prepareUserDetails() {
-        UserEntity userEntity = new UserEntity("example@tech.com", "123");
-        userEntityRepository.save(userEntity);
-        this.userDetails = new UserEntityDetails(userEntity);
-    }
-
     @Test
     public void userCanAddReplica() {
         //given
+        UserDetails userDetails = prepareUserDetails();
         CreateOwnerCommand ownerCommand = toCreateOwnerCommand("pawel@replicaOwner.com");
         CreateReplicaCommand command = new CreateReplicaCommand(
                 "GG tr16 308 sr",
@@ -71,7 +64,8 @@ public class BasicReplicaServiceTest {
     @Test
     public void userCanChangeReplicaStatusFromNewToInProgress() {
         //given
-        Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
+        UserDetails userDetails = prepareUserDetails();
+        Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com", userDetails);
         UpdateReplicaStatusCommand command = new UpdateReplicaStatusCommand(replica.getId(), "INPROGRESS", userDetails);
 
         //when
@@ -85,7 +79,8 @@ public class BasicReplicaServiceTest {
     @Test
     public void userCannotChangeFinishedReplicaStatus() {
         //given
-        Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
+        UserDetails userDetails = prepareUserDetails();
+        Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com", userDetails);
         UpdateReplicaStatusCommand testingCommand = new UpdateReplicaStatusCommand(replica.getId(), "TESTING", userDetails);
         UpdateReplicaStatusCommand finishedCommand = new UpdateReplicaStatusCommand(replica.getId(), "FINISHED", userDetails);
 
@@ -103,7 +98,8 @@ public class BasicReplicaServiceTest {
     @Test
     public void userCannotChangeInProgressReplicaStatusToNew() {
         //given
-        Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
+        UserDetails userDetails = prepareUserDetails();
+        Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com", userDetails);
         UpdateReplicaStatusCommand newCommand = new UpdateReplicaStatusCommand(replica.getId(), "NEW", userDetails);
         UpdateReplicaStatusCommand inProgressCommand = new UpdateReplicaStatusCommand(replica.getId(), "INPROGRESS", userDetails);
 
@@ -117,7 +113,13 @@ public class BasicReplicaServiceTest {
         Assertions.assertTrue(exception.getMessage().contains("Unable to change the replica status from INPROGRESS to NEW"));
     }
 
-    private Replica givenReplica(String replicaName, String ownerEmail) {
+    private UserDetails prepareUserDetails() {
+        UserEntity userEntity = new UserEntity("example@tech.com", "123");
+        userEntityRepository.save(userEntity);
+        return new UserEntityDetails(userEntity);
+    }
+
+    private Replica givenReplica(String replicaName, String ownerEmail, UserDetails userDetails) {
         BasicReplicaUseCase.CreateOwnerCommand ownerCommand = toCreateOwnerCommand(ownerEmail);
         BasicReplicaUseCase.CreateReplicaCommand command = new BasicReplicaUseCase.CreateReplicaCommand(
                 replicaName,
