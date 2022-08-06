@@ -1,0 +1,1 @@
+ALTER TABLE replicas RENAME COLUMN user_id TO tech_id;
