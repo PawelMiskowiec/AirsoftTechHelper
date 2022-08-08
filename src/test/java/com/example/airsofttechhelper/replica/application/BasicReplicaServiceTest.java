@@ -64,6 +64,23 @@ public class BasicReplicaServiceTest {
     }
 
     @Test
+    public void userCannotChangeReplicaStatusToNonexistent(){
+        //given
+        UserDetails userDetails = prepareUserDetails("example@tech.com");
+        Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com", userDetails);
+        UpdateReplicaStatusCommand command = new UpdateReplicaStatusCommand(replica.getId(), "faultyStatus", userDetails);
+
+        //when
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            basicReplicaService.updateReplicaStatus(command);
+        });
+
+        //then
+        assertEquals(ReplicaStatus.NEW, replicaJpaRepository.findById(replica.getId()).get().getStatus());
+        assertEquals(exception.getMessage(), "faultyStatus is not a valid replica status");
+    }
+
+    @Test
     public void userCanChangeReplicaStatusFromNewToInProgress() {
         //given
         UserDetails userDetails = prepareUserDetails("example@tech.com");

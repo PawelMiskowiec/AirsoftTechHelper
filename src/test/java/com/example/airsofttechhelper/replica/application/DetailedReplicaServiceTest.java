@@ -19,13 +19,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @AutoConfigureTestDatabase
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class ReplicaServiceTest {
+class DetailedReplicaServiceTest {
 
     @Autowired
     BasicBasicReplicaService basicReplicaService;
 
     @Autowired
-    DetailedReplicaService replicaService;
+    DetailedReplicaService detailedReplicaService;
 
     @Autowired
     ReplicaJpaRepository replicaJpaRepository;
@@ -39,7 +39,7 @@ class ReplicaServiceTest {
         Replica replica = givenReplica("TR16 308SR", "example@gmail.com");
 
         //when
-        Replica foundReplica = basicReplicaService.findOneById(replica.getId()).get();
+        Replica foundReplica = detailedReplicaService.findById(replica.getId()).get();
 
         //then
         assertEquals(replica.getId(), foundReplica.getId());
@@ -56,7 +56,7 @@ class ReplicaServiceTest {
         DetailedReplicaUseCase.UpdateReplicaCommand updateCommand =
                 new DetailedReplicaUseCase.UpdateReplicaCommand(replica.getId(), newName, newDescription, newAdditionalEquipment);
         //when
-        replicaService.updateReplica(updateCommand);
+        detailedReplicaService.updateReplica(updateCommand);
 
         //then
         assertEquals(newName, replicaJpaRepository.findById(replica.getId()).get().getName());
@@ -74,7 +74,7 @@ class ReplicaServiceTest {
         DetailedReplicaUseCase.UpdateReplicaCommand updateCommand =
                 new DetailedReplicaUseCase.UpdateReplicaCommand(replica.getId(), null, null, newAdditionalEquipment);
         //when
-        replicaService.updateReplica(updateCommand);
+        detailedReplicaService.updateReplica(updateCommand);
 
         //then
         assertEquals(newAdditionalEquipment, replicaJpaRepository.findById(replica.getId()).get().getAdditionalEquipment());
