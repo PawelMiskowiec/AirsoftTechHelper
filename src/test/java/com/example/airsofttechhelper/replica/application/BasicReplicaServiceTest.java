@@ -19,6 +19,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.List;
+
 import static com.example.airsofttechhelper.replica.application.port.BasicReplicaUseCase.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,7 +45,7 @@ public class BasicReplicaServiceTest {
     @Test
     public void userCanAddReplica() {
         //given
-        UserDetails userDetails = prepareUserDetails();
+        UserDetails userDetails = prepareUserDetails("example@tech.com");
         CreateOwnerCommand ownerCommand = toCreateOwnerCommand("pawel@replicaOwner.com");
         CreateReplicaCommand command = new CreateReplicaCommand(
                 "GG tr16 308 sr",
@@ -64,7 +66,7 @@ public class BasicReplicaServiceTest {
     @Test
     public void userCanChangeReplicaStatusFromNewToInProgress() {
         //given
-        UserDetails userDetails = prepareUserDetails();
+        UserDetails userDetails = prepareUserDetails("example@tech.com");
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com", userDetails);
         UpdateReplicaStatusCommand command = new UpdateReplicaStatusCommand(replica.getId(), "INPROGRESS", userDetails);
 
@@ -79,7 +81,7 @@ public class BasicReplicaServiceTest {
     @Test
     public void userCannotChangeFinishedReplicaStatus() {
         //given
-        UserDetails userDetails = prepareUserDetails();
+        UserDetails userDetails = prepareUserDetails("example@tech.com");
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com", userDetails);
         UpdateReplicaStatusCommand testingCommand = new UpdateReplicaStatusCommand(replica.getId(), "TESTING", userDetails);
         UpdateReplicaStatusCommand finishedCommand = new UpdateReplicaStatusCommand(replica.getId(), "FINISHED", userDetails);
@@ -98,7 +100,7 @@ public class BasicReplicaServiceTest {
     @Test
     public void userCannotChangeInProgressReplicaStatusToNew() {
         //given
-        UserDetails userDetails = prepareUserDetails();
+        UserDetails userDetails = prepareUserDetails("example@tech.com");
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com", userDetails);
         UpdateReplicaStatusCommand newCommand = new UpdateReplicaStatusCommand(replica.getId(), "NEW", userDetails);
         UpdateReplicaStatusCommand inProgressCommand = new UpdateReplicaStatusCommand(replica.getId(), "INPROGRESS", userDetails);
@@ -113,8 +115,44 @@ public class BasicReplicaServiceTest {
         Assertions.assertTrue(exception.getMessage().contains("Unable to change the replica status from INPROGRESS to NEW"));
     }
 
-    private UserDetails prepareUserDetails() {
-        UserEntity userEntity = new UserEntity("example@tech.com", "123");
+    @Test
+    public void userShouldReceiveOnlyOwnedReplicas(){
+        //given
+        UserDetails firstUser = prepareUserDetails("example@tech.com");
+        UserDetails secondUser = prepareUserDetails("secondExample@tech.com");
+        givenReplica("Tr16 test", firstUser.getUsername(), firstUser);
+        Replica replica2 = givenReplica("Tr16 test replica no 2", firstUser.getUsername(), firstUser);
+
+        //when
+        List<Replica> firstUserReplicas = basicReplicaService.findAllUserReplicas(firstUser.getUsername());
+        List<Replica> secondUserReplicas = basicReplicaService.findAllUserReplicas(secondUser.getUsername());
+
+        //then
+        assertEquals(2, firstUserReplicas.size());
+        assertEquals(0, secondUserReplicas.size());
+        assertTrue(firstUserReplicas.contains(replica2));
+        assertFalse(secondUserReplicas.contains(replica2));
+    }
+
+    @Test
+    public void shouldGetAllUserReplicasWithStatusInProgress(){
+        //given
+        UserDetails user = prepareUserDetails("example@tech.com");
+        givenReplica("Tr16 test", user.getUsername(), user);
+        Replica replica2 = givenReplica("Tr16 test replica no 2", user.getUsername(), user);
+        UpdateReplicaStatusCommand command = new UpdateReplicaStatusCommand(replica2.getId(), "INPROGRESS", user);
+        basicReplicaService.updateReplicaStatus(command);
+
+        //when
+        List<Replica> allInProgress = basicReplicaService.findAllUserReplicasByStatus("inprogress", user.getUsername());
+
+        //then
+        assertEquals(1, allInProgress.size());
+        assertTrue(allInProgress.contains(replica2));
+    }
+
+    private UserDetails prepareUserDetails(String userMail) {
+        UserEntity userEntity = new UserEntity(userMail, "123");
         userEntityRepository.save(userEntity);
         return new UserEntityDetails(userEntity);
     }

@@ -24,12 +24,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.net.URI;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
@@ -80,7 +79,7 @@ class BasicReplicasControllerApiTest {
         //when
         String url = "http://localhost:" + port + "/replicas-list/1";
         RequestEntity<?> request = RequestEntity.get(url).build();
-        ResponseEntity<RestBasicReplica> response = restTemplate.exchange(request, RestBasicReplica.class);
+        ResponseEntity<RestBasicReplica> response = restTemplate.withBasicAuth("admin", "admin123").exchange(request, RestBasicReplica.class);
 
         //then
         Assertions.assertEquals(HttpStatus.OK.toString(), response.getStatusCode().toString());

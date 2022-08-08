@@ -60,10 +60,6 @@ public class Replica extends BaseEntity {
         this.replicaOwner = replicaOwner;
     }
 
-    public void addReplicaPart(ReplicaPart replicaPart) {
-        replicaParts.add(replicaPart);
-    }
-
     public void updateStatus(ReplicaStatus newStatus) {
         this.status = status.changeStatus(newStatus);
     }

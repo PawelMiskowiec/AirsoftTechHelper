@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,12 +34,14 @@ public class BasicBasicReplicaService implements BasicReplicaUseCase {
 
     @Override
     public List<Replica> findAllUserReplicasByStatus(String status, String username) {
-        return repository.findAllByStatusAndUsername(status, username);
+        ReplicaStatus replicaStatus = ReplicaStatus.parseString(status)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid status " + status));
+        return repository.findAllByStatusAndUsername(replicaStatus, username);
     }
 
     @Override
     public Optional<Replica> findOneById(Long id) {
-        return repository.findById(id);
+        return repository.findOneByIdFetchForAuth(id);
     }
 
     @Override
@@ -52,7 +53,7 @@ public class BasicBasicReplicaService implements BasicReplicaUseCase {
     @Override
     public UpdateStatusResponse updateReplicaStatus(UpdateReplicaStatusCommand command) {
         return repository
-                .findById(command.getReplicaId())
+                .findOneByIdFetchForAuth(command.getReplicaId())
                 .map(replica -> {
                     if(!userSecurity.isOwnerOrAdmin(replica.getTech().getUsername(), command.getUser())){
                         return new UpdateStatusResponse(
