@@ -19,7 +19,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 @Transactional
-public class BasicBasicReplicaService implements BasicReplicaUseCase {
+public class BasicReplicaService implements BasicReplicaUseCase {
 
     private final ReplicaJpaRepository repository;
     private final OwnerJpaRepository ownerJpaRepository;

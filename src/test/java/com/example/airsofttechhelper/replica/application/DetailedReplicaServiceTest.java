@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class DetailedReplicaServiceTest {
 
     @Autowired
-    BasicBasicReplicaService basicReplicaService;
+    BasicReplicaService basicReplicaService;
 
     @Autowired
     DetailedReplicaService detailedReplicaService;
@@ -36,7 +36,7 @@ class DetailedReplicaServiceTest {
     @Test
     void findById() {
         //given
-        Replica replica = givenReplica("TR16 308SR", "example@gmail.com");
+        Replica replica = givenReplica("TR16 308SR", "example@gmail.com", givenUserDetails());
 
         //when
         Replica foundReplica = detailedReplicaService.findById(replica.getId()).get();
@@ -49,12 +49,13 @@ class DetailedReplicaServiceTest {
     @Test
     void updateReplica() {
         //given
-        Replica replica = givenReplica("TR16 308SR", "example@gmail.com");
+        UserDetails userDetails = givenUserDetails();
+        Replica replica = givenReplica("TR16 308SR", "example@gmail.com", userDetails);
         String newName = "TR16 308WH";
         String newDescription = "ReplicaOwner has paid extra to be done quickly";
         String newAdditionalEquipment = "5 mags";
         DetailedReplicaUseCase.UpdateReplicaCommand updateCommand =
-                new DetailedReplicaUseCase.UpdateReplicaCommand(replica.getId(), newName, newDescription, newAdditionalEquipment);
+                new DetailedReplicaUseCase.UpdateReplicaCommand(replica.getId(), newName, newDescription, newAdditionalEquipment, userDetails);
         //when
         detailedReplicaService.updateReplica(updateCommand);
 
@@ -62,34 +63,32 @@ class DetailedReplicaServiceTest {
         assertEquals(newName, replicaJpaRepository.findById(replica.getId()).get().getName());
         assertEquals(newDescription, replicaJpaRepository.findById(replica.getId()).get().getDescription());
         assertEquals(newAdditionalEquipment, replicaJpaRepository.findById(replica.getId()).get().getAdditionalEquipment());
-
-
     }
 
     @Test
     void updateOnlyFewFieldsOfReplica() {
         //given
-        Replica replica = givenReplica("TR16 308SR", "example@gmail.com");
+        UserDetails userDetails = givenUserDetails();
+        Replica replica = givenReplica("TR16 308SR", "example@gmail.com", userDetails);
         String newAdditionalEquipment = "5 mags";
         DetailedReplicaUseCase.UpdateReplicaCommand updateCommand =
-                new DetailedReplicaUseCase.UpdateReplicaCommand(replica.getId(), null, null, newAdditionalEquipment);
+                new DetailedReplicaUseCase.UpdateReplicaCommand(replica.getId(), null, null, newAdditionalEquipment, userDetails);
         //when
         detailedReplicaService.updateReplica(updateCommand);
 
         //then
         assertEquals(newAdditionalEquipment, replicaJpaRepository.findById(replica.getId()).get().getAdditionalEquipment());
         assertEquals("TR16 308SR", replicaJpaRepository.findById(replica.getId()).get().getName());
-
     }
 
-    private Replica givenReplica(String replicaName, String ownerEmail) {
+    private Replica givenReplica(String replicaName, String ownerEmail, UserDetails userDetails) {
         BasicReplicaUseCase.CreateOwnerCommand ownerCommand = toCreateOwnerCommand(ownerEmail);
         BasicReplicaUseCase.CreateReplicaCommand command = new BasicReplicaUseCase.CreateReplicaCommand(
                 replicaName,
                 "this replica is supposed to be fully upgraded",
                 "3 mid-cap magazines",
                 ownerCommand,
-                givenUserDetails()
+                userDetails
         );
         return basicReplicaService.addReplica(command);
     }

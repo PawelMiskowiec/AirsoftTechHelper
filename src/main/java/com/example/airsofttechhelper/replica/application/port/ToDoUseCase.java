@@ -1,7 +1,11 @@
 package com.example.airsofttechhelper.replica.application.port;
 
 import com.example.airsofttechhelper.replica.domain.ToDo;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +21,7 @@ public interface ToDoUseCase {
         String title;
         String content;
         Long replicaId;
+        UserDetails user;
     }
 
     @Value
@@ -24,12 +29,22 @@ public interface ToDoUseCase {
         String title;
         String content;
         Long toDoId;
+        UserDetails user;
     }
 
     @Value
     class UpdateToDoResponse{
-        public static UpdateToDoResponse SUCCESS = new UpdateToDoResponse(true, Collections.emptyList());
+        public static UpdateToDoResponse SUCCESS = new UpdateToDoResponse(true, Collections.emptyList(), null);
         boolean success;
         List<String> errors;
+        ErrorStatus status;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    enum ErrorStatus{
+        FORBIDDEN(HttpStatus.FORBIDDEN),
+        NOTFOUND(HttpStatus.NOT_FOUND);
+        private final HttpStatus status;
     }
 }

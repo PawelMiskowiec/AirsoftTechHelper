@@ -9,10 +9,7 @@ import com.example.airsofttechhelper.security.UserEntityDetails;
 import com.example.airsofttechhelper.user.db.UserEntityRepository;
 import com.example.airsofttechhelper.user.domain.UserEntity;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,7 +34,7 @@ public class BasicReplicaServiceTest {
     OwnerJpaRepository ownerJpaRepository;
 
     @Autowired
-    BasicBasicReplicaService basicReplicaService;
+    BasicReplicaService basicReplicaService;
 
     @Autowired
     UserEntityRepository userEntityRepository;
@@ -45,7 +42,7 @@ public class BasicReplicaServiceTest {
     @Test
     public void userCanAddReplica() {
         //given
-        UserDetails userDetails = prepareUserDetails("example@tech.com");
+        UserDetails userDetails = givenUserDetails("example@tech.com");
         CreateOwnerCommand ownerCommand = toCreateOwnerCommand("pawel@replicaOwner.com");
         CreateReplicaCommand command = new CreateReplicaCommand(
                 "GG tr16 308 sr",
@@ -66,7 +63,7 @@ public class BasicReplicaServiceTest {
     @Test
     public void userCannotChangeReplicaStatusToNonexistent(){
         //given
-        UserDetails userDetails = prepareUserDetails("example@tech.com");
+        UserDetails userDetails = givenUserDetails("example@tech.com");
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com", userDetails);
         UpdateReplicaStatusCommand command = new UpdateReplicaStatusCommand(replica.getId(), "faultyStatus", userDetails);
 
@@ -83,7 +80,7 @@ public class BasicReplicaServiceTest {
     @Test
     public void userCanChangeReplicaStatusFromNewToInProgress() {
         //given
-        UserDetails userDetails = prepareUserDetails("example@tech.com");
+        UserDetails userDetails = givenUserDetails("example@tech.com");
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com", userDetails);
         UpdateReplicaStatusCommand command = new UpdateReplicaStatusCommand(replica.getId(), "INPROGRESS", userDetails);
 
@@ -98,7 +95,7 @@ public class BasicReplicaServiceTest {
     @Test
     public void userCannotChangeFinishedReplicaStatus() {
         //given
-        UserDetails userDetails = prepareUserDetails("example@tech.com");
+        UserDetails userDetails = givenUserDetails("example@tech.com");
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com", userDetails);
         UpdateReplicaStatusCommand testingCommand = new UpdateReplicaStatusCommand(replica.getId(), "TESTING", userDetails);
         UpdateReplicaStatusCommand finishedCommand = new UpdateReplicaStatusCommand(replica.getId(), "FINISHED", userDetails);
@@ -117,7 +114,7 @@ public class BasicReplicaServiceTest {
     @Test
     public void userCannotChangeInProgressReplicaStatusToNew() {
         //given
-        UserDetails userDetails = prepareUserDetails("example@tech.com");
+        UserDetails userDetails = givenUserDetails("example@tech.com");
         Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com", userDetails);
         UpdateReplicaStatusCommand newCommand = new UpdateReplicaStatusCommand(replica.getId(), "NEW", userDetails);
         UpdateReplicaStatusCommand inProgressCommand = new UpdateReplicaStatusCommand(replica.getId(), "INPROGRESS", userDetails);
@@ -135,8 +132,8 @@ public class BasicReplicaServiceTest {
     @Test
     public void userShouldReceiveOnlyOwnedReplicas(){
         //given
-        UserDetails firstUser = prepareUserDetails("example@tech.com");
-        UserDetails secondUser = prepareUserDetails("secondExample@tech.com");
+        UserDetails firstUser = givenUserDetails("example@tech.com");
+        UserDetails secondUser = givenUserDetails("secondExample@tech.com");
         givenReplica("Tr16 test", firstUser.getUsername(), firstUser);
         Replica replica2 = givenReplica("Tr16 test replica no 2", firstUser.getUsername(), firstUser);
 
@@ -154,7 +151,7 @@ public class BasicReplicaServiceTest {
     @Test
     public void shouldGetAllUserReplicasWithStatusInProgress(){
         //given
-        UserDetails user = prepareUserDetails("example@tech.com");
+        UserDetails user = givenUserDetails("example@tech.com");
         givenReplica("Tr16 test", user.getUsername(), user);
         Replica replica2 = givenReplica("Tr16 test replica no 2", user.getUsername(), user);
         UpdateReplicaStatusCommand command = new UpdateReplicaStatusCommand(replica2.getId(), "INPROGRESS", user);
@@ -168,7 +165,7 @@ public class BasicReplicaServiceTest {
         assertTrue(allInProgress.contains(replica2));
     }
 
-    private UserDetails prepareUserDetails(String userMail) {
+    private UserDetails givenUserDetails(String userMail) {
         UserEntity userEntity = new UserEntity(userMail, "123");
         userEntityRepository.save(userEntity);
         return new UserEntityDetails(userEntity);

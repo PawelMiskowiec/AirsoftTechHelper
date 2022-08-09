@@ -3,7 +3,7 @@ package com.example.airsofttechhelper.replica.web;
 import com.example.airsofttechhelper.part.application.ReplicaPartService;
 import com.example.airsofttechhelper.part.application.port.ReplicaPartUseCase;
 import com.example.airsofttechhelper.part.domain.ReplicaPart;
-import com.example.airsofttechhelper.replica.application.BasicBasicReplicaService;
+import com.example.airsofttechhelper.replica.application.BasicReplicaService;
 import com.example.airsofttechhelper.replica.application.DetailedReplicaService;
 import com.example.airsofttechhelper.replica.application.port.BasicReplicaUseCase;
 import com.example.airsofttechhelper.replica.domain.Replica;
@@ -39,7 +39,7 @@ class DetailedReplicaControllerIT {
     DetailedReplicaService replicaService;
 
     @Autowired
-    BasicBasicReplicaService basicReplicaService;
+    BasicReplicaService basicReplicaService;
 
     @Autowired
     UserEntityRepository userEntityRepository;
@@ -47,8 +47,8 @@ class DetailedReplicaControllerIT {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     public void getByIdTest(){ //Just playing with hql, lazy initialization, hashCode & equals
-        Replica replica = givenReplica("GG tr16 308 sr", "pawel@miskowiec.com");
-
+        UserDetails userDetails = givenUserDetails();
+        Replica replica = givenReplica("GG tr16 308 sr", "example@tech.com", userDetails);
         ReplicaPartUseCase.CreateReplicaPartCommand command =
                 new ReplicaPartUseCase.CreateReplicaPartCommand(replica.getId(), Optional.empty(), "First Part",
                         "HopUp", "Very good part");
@@ -61,10 +61,12 @@ class DetailedReplicaControllerIT {
         System.out.println("\nAdding second part \n");
         ReplicaPart replicaPart2 = replicaPartService.addReplicaPart(command2);
         System.out.println("\nAdding todo \n");
-        ToDoUseCase.CreateToDoCommand createToDoCommand = new ToDoUseCase.CreateToDoCommand("ExampleToDo", "Example todoContent", replica.getId());
+        ToDoUseCase.CreateToDoCommand createToDoCommand =
+                new ToDoUseCase.CreateToDoCommand("ExampleToDo", "Example todoContent", replica.getId(), userDetails);
         ToDo toDo = toDoService.addToDo(createToDoCommand);
         System.out.println("\nUpdating todo\n");
-        ToDoUseCase.UpdateToDoCommand updateToDoCommand = new ToDoUseCase.UpdateToDoCommand("Updated ExampleToDo", "toDoContent", toDo.getId());
+        ToDoUseCase.UpdateToDoCommand updateToDoCommand =
+                new ToDoUseCase.UpdateToDoCommand("Updated ExampleToDo", "toDoContent", toDo.getId(), userDetails);
         toDoService.updateToDO(updateToDoCommand);
 
         System.out.println("\n before printing parts \n");
@@ -75,14 +77,14 @@ class DetailedReplicaControllerIT {
         System.out.println(replicaPart.equals(replicaPart2));
     }
 
-    private Replica givenReplica(String replicaName, String ownerEmail){
+    private Replica givenReplica(String replicaName, String ownerEmail, UserDetails userDetails){
         BasicReplicaUseCase.CreateOwnerCommand ownerCommand = toCreateOwnerCommand(ownerEmail);
         BasicReplicaUseCase.CreateReplicaCommand command = new BasicReplicaUseCase.CreateReplicaCommand(
                 replicaName,
                 "this replica is supposed to be fully upgraded",
                 "3 mid-cap magazines",
                 ownerCommand,
-                givenUserDetails()
+                userDetails
         );
         return basicReplicaService.addReplica(command);
     }

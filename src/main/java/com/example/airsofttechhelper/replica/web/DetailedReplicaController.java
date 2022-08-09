@@ -93,7 +93,7 @@ public class DetailedReplicaController {
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @PostMapping("/todo")
     public ResponseEntity<Object> addToDo(@Valid @RequestBody RestToDoCommand command, @AuthenticationPrincipal UserDetails user) {
-        ToDo toDo = toDoService.addToDo(command.toCreateToDoCommand());
+        ToDo toDo = toDoService.addToDo(command.toCreateToDoCommand(user));
         URI uri = new CreatedURI("/replica/" + command.replicaId + "/todo/" + toDo.getId()).uri();
         return ResponseEntity.created(uri).build();
     }
@@ -121,8 +121,8 @@ public class DetailedReplicaController {
         @Positive
         private Long replicaId;
 
-        ToDoUseCase.CreateToDoCommand toCreateToDoCommand() {
-            return new ToDoUseCase.CreateToDoCommand(title, content, replicaId);
+        ToDoUseCase.CreateToDoCommand toCreateToDoCommand(UserDetails userDetails) {
+            return new ToDoUseCase.CreateToDoCommand(title, content, replicaId, userDetails);
         }
     }
 

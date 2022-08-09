@@ -3,6 +3,7 @@ package com.example.airsofttechhelper.replica.application;
 import com.example.airsofttechhelper.replica.application.port.DetailedReplicaUseCase;
 import com.example.airsofttechhelper.replica.db.ReplicaJpaRepository;
 import com.example.airsofttechhelper.replica.domain.Replica;
+import com.example.airsofttechhelper.security.UserSecurity;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.util.Optional;
 public class DetailedReplicaService implements DetailedReplicaUseCase {
 
     private final ReplicaJpaRepository repository;
+    private final UserSecurity userSecurity;
 
     @Override
     public Optional<Replica> findById(Long id) {
@@ -27,12 +29,16 @@ public class DetailedReplicaService implements DetailedReplicaUseCase {
     public UpdateReplicaResponse updateReplica(UpdateReplicaCommand command) {
         return repository.findById(command.getReplicaId())
                 .map(replica -> {
-                    updateFields(command, replica);
-                    return UpdateReplicaResponse.SUCCESS;
+                    if(userSecurity.isOwnerOrAdmin(replica.getTech().getUsername(), command.getTech())){
+                        updateFields(command, replica);
+                        return UpdateReplicaResponse.SUCCESS;
+                    }
+                    return new UpdateReplicaResponse(false, List.of("Unauthorised"), ErrorStatus.FORBIDDEN);
                 })
                 .orElse(new UpdateReplicaResponse(
                         false,
-                        List.of("Replica with id " + command.getReplicaId() + " not found")
+                        List.of("Replica with id " + command.getReplicaId() + " not found"),
+                        ErrorStatus.NOT_FOUND
                 ));
     }
 

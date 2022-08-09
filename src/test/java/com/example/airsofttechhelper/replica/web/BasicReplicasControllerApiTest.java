@@ -14,21 +14,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.net.URI;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase
@@ -47,6 +43,8 @@ class BasicReplicasControllerApiTest {
     @Autowired
     UserEntityRepository userEntityRepository;
 
+
+
     @Test
     void getAllReplicas() {
         //given
@@ -57,7 +55,8 @@ class BasicReplicasControllerApiTest {
                 "replicaOwner@gmail.com");
 
         Mockito.when(basicReplicasController.getAllUsersReplicas(Optional.empty(), userDetails)).thenReturn(List.of(replica, replica2));
-        ParameterizedTypeReference<List<RestBasicReplica>> typeReference = new ParameterizedTypeReference<>(){};
+        ParameterizedTypeReference<List<RestBasicReplica>> typeReference = new ParameterizedTypeReference<>() {
+        };
 
         //when
         String url = "http://localhost:" + port + "/replicas-list";
@@ -69,7 +68,7 @@ class BasicReplicasControllerApiTest {
     }
 
     @Test
-    void getReplicaById(){
+    void getReplicaById() {
         //given
         RestBasicReplica replica = new RestBasicReplica(1L, "gg tr16", ReplicaStatus.TESTING, LocalDateTime.now(),
                 "replicaOwner@gmail.com");
