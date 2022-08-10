@@ -1,0 +1,23 @@
+app:
+  security:
+    admin:
+      username: admin
+      #(bcrypt admin123)
+      password: $2a$12$55WVoj7SKMDoSqXevo9owOqld7QtVwhFioXncFplgLnU3nExxmV5O
+      roles: ROLE_ADMIN
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:7432/airsofttechhelper
+    username: admin
+    password: pass123
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+#Security logs
+logging:
+  level:
+    org:
+      springframework:
+        security: debug
