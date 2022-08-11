@@ -1,5 +1,6 @@
 package com.example.airsofttechhelper;
 
+import com.example.airsofttechhelper.security.UnauthorisedAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,11 @@ public class CustomGlobalExceptionHandler {
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Object> handle(ResponseStatusException ex){
         return handleError(ex.getStatus(), List.of(ex.getMessage()));
+    }
+
+    @ExceptionHandler(UnauthorisedAccessException.class)
+    public ResponseEntity<Object> handle(UnauthorisedAccessException ex){
+        return handleError(HttpStatus.FORBIDDEN, List.of(ex.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

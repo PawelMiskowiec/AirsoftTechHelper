@@ -5,8 +5,10 @@ import com.example.airsofttechhelper.replica.domain.Replica;
 import com.example.airsofttechhelper.replica.application.port.ToDoUseCase;
 import com.example.airsofttechhelper.replica.db.ToDoJpaRepository;
 import com.example.airsofttechhelper.replica.domain.ToDo;
+import com.example.airsofttechhelper.security.UnauthorisedAccessException;
 import com.example.airsofttechhelper.security.UserSecurity;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -32,8 +34,7 @@ public class ToDoService implements ToDoUseCase {
                 .findOneByIdFetchForAuth(command.getReplicaId())
                 .map(r -> {
                     if(!userSecurity.isOwnerOrAdmin(r.getTech().getUsername(), command.getUser())){
-                        throw new IllegalArgumentException("Forbidden");
-
+                        throw new UnauthorisedAccessException(command.getUser().getUsername() + " is not authorised to add todos to Replica with id " + r.getId());
                     }
                     return r;
                 }).orElseThrow(() -> new IllegalArgumentException("Replica not found"));

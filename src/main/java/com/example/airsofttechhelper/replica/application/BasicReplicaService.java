@@ -58,7 +58,7 @@ public class BasicReplicaService implements BasicReplicaUseCase {
                     if(!userSecurity.isOwnerOrAdmin(replica.getTech().getUsername(), command.getUser())){
                         return new UpdateStatusResponse(
                                 false,
-                                null,
+                                "User " + command.getUser().getUsername() + " is not authorised to update this replica",
                                 Error.FORBIDDEN
                         );
                     }
