@@ -16,6 +16,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
@@ -28,19 +29,8 @@ import java.util.Optional;
 class BasicReplicasControllerIT {
     @Autowired
     BasicReplicaUseCase replicaService;
-
     @Autowired
     BasicReplicasController basicReplicasController;
-
-    @Autowired
-    ReplicaPartsController replicaPartsController;
-
-    @Autowired
-    ReplicaPartUseCase replicaPartService;
-
-    @Autowired
-    ToDoUseCase toDoService;
-
     @Autowired
     UserEntityRepository userEntityRepository;
 
