@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: airsofttechhelperdb
+    image: postgres:14.4
+    restart: always
+    environment:
+      POSTGRES_DB: airsofttechhelper
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: pass123
+    ports:
+      - "7432:5432"
