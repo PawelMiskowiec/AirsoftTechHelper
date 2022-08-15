@@ -21,17 +21,20 @@ Main aim is to simply keep track of progress in builds for clients and parts and
 - Maven
 
 ## Launch
-Requirements: Jdk 18, Maven 3.8.5, Postgresql 14.4
+#### Required software
+Jdk 18, Maven 3.8.5, Postgresql 14.4
 
-The application requires empty PostgreSQL database. One may create docker container based on docker-compose file located in /dockerATH
+#### Required database
+The application requires empty Postgres 14.4 database.
 
-Alternatively one may specify connection to postgres database in 
-src/main/resources/application.yml file
+If one already has available database, connection details may be specified in src/main/resources/application.yml file <br>
+If not, one may create docker container with db based on docker-compose file located in /dockerATH
 
 Database schema will be build as specified in src/main/resources/db/migration sql files thanks to flyway
 
-After database is ready open in terminal project location and execute command
+#### Running application
 
+In order to run application open a terminal in the project location and execute command  <br>
 `./mvnw spring-boot:run`
 
 Application should be up and running!
