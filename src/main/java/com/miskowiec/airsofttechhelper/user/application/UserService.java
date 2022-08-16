@@ -1,9 +1,12 @@
 package com.miskowiec.airsofttechhelper.user.application;
 
+import com.miskowiec.airsofttechhelper.security.UnauthorisedAccessException;
+import com.miskowiec.airsofttechhelper.security.UserSecurity;
 import com.miskowiec.airsofttechhelper.user.application.port.UserRegistrationUseCase;
 import com.miskowiec.airsofttechhelper.user.db.UserEntityRepository;
 import com.miskowiec.airsofttechhelper.user.domain.UserEntity;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +15,10 @@ import javax.transaction.Transactional;
 @Service
 @AllArgsConstructor
 public class UserRegistrationService implements UserRegistrationUseCase {
-
     private final UserEntityRepository repository;
     private final PasswordEncoder encoder;
+
+    private final UserSecurity userSecurity;
 
     @Transactional
     @Override
@@ -26,4 +30,16 @@ public class UserRegistrationService implements UserRegistrationUseCase {
         repository.save(user);
         return RegisterResponse.SUCCESS;
     }
+
+    @Transactional
+    @Override
+    public UpdatePasswordResponse changePassword(UserDetails user, String newPassword) {
+        return repository.findByUsername(user.getUsername())
+                .map(userEntity -> {
+                    userEntity.setPassword(encoder.encode(newPassword));
+                    return UpdatePasswordResponse.SUCCESS;
+                })
+                .orElse( new UpdatePasswordResponse(false, "Cannot find " + user.getUsername() + " user"));
+    }
+
 }
