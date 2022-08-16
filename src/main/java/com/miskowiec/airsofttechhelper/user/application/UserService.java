@@ -1,8 +1,7 @@
 package com.miskowiec.airsofttechhelper.user.application;
 
-import com.miskowiec.airsofttechhelper.security.UnauthorisedAccessException;
 import com.miskowiec.airsofttechhelper.security.UserSecurity;
-import com.miskowiec.airsofttechhelper.user.application.port.UserRegistrationUseCase;
+import com.miskowiec.airsofttechhelper.user.application.port.UserUseCase;
 import com.miskowiec.airsofttechhelper.user.db.UserEntityRepository;
 import com.miskowiec.airsofttechhelper.user.domain.UserEntity;
 import lombok.AllArgsConstructor;
@@ -14,7 +13,7 @@ import javax.transaction.Transactional;
 
 @Service
 @AllArgsConstructor
-public class UserRegistrationService implements UserRegistrationUseCase {
+public class UserService implements UserUseCase {
     private final UserEntityRepository repository;
     private final PasswordEncoder encoder;
 

@@ -22,11 +22,11 @@ import java.util.Optional;
 @AutoConfigureTestDatabase
 @WithMockUser
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class BasicReplicasControllerIT {
+class ReplicasControllerIT {
     @Autowired
     BasicReplicaUseCase replicaService;
     @Autowired
-    BasicReplicasController basicReplicasController;
+    ReplicasController replicasController;
     @Autowired
     UserEntityRepository userEntityRepository;
 
@@ -41,7 +41,7 @@ class BasicReplicasControllerIT {
         Replica replica2 = givenReplica("EA m4", "pawel@miskowiec.com", tech);
 
         //when
-        List<RestBasicReplica> all = basicReplicasController.getAllUsersReplicas(Optional.empty(), tech);
+        List<RestBasicReplica> all = replicasController.getAllUsersReplicas(Optional.empty(), tech);
 
         //then
         Assertions.assertEquals(2, all.size());

@@ -17,6 +17,6 @@ import javax.persistence.*;
 public class ToDo extends BaseEntity {
     private String title;
     private String content;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Replica replica;
 }

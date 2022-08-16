@@ -24,7 +24,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableConfigurationProperties(AdminConfig.class)
 @AllArgsConstructor
 class AthSecurityConfiguration {
-
     private final AuthenticationConfiguration configuration;
     private final UserEntityRepository userEntityRepository;
     private final AdminConfig adminConfig;

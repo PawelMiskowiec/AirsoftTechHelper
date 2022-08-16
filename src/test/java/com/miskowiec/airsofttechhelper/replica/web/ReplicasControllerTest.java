@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 )
 @AutoConfigureTestDatabase
 @AutoConfigureMockMvc
-class BasicReplicasControllerTest {
+class ReplicasControllerTest {
 
     @LocalServerPort
     private int port;
@@ -53,7 +53,7 @@ class BasicReplicasControllerTest {
         Mockito.when(basicReplicaService.findAllUserReplicas(testUser.getUsername())).thenReturn(replicas);
 
         //then
-        mockMvc.perform(get("/replicas-list"))
+        mockMvc.perform(get("/replicas"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(
                         "[" +
@@ -68,7 +68,7 @@ class BasicReplicasControllerTest {
     void getReplicaById() throws Exception {
         Replica replica = givenReplica("gg tr16", 1l);
         Mockito.when(basicReplicaService.findOneById(1L)).thenReturn(Optional.of(replica));
-        mockMvc.perform(get("/replicas-list/1"))
+        mockMvc.perform(get("/replicas/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("" +
                         "{\"id\":1,\"name\":\"gg tr16\",\"status\":\"NEW\",\"createdAt\":null,\"ownerEmail\":\"owner@gmail.com\"}"

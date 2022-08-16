@@ -29,10 +29,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/replica")
+@RequestMapping("/replicas/details")
 @AllArgsConstructor
 public class DetailedReplicaController {
-
     private final DetailedReplicaUseCase replicaService;
     private final ToDoUseCase toDoService;
 
@@ -43,9 +42,7 @@ public class DetailedReplicaController {
     public ResponseEntity<RestDetailedReplica> getById(@PathVariable Long id, @AuthenticationPrincipal UserDetails user) {
         return replicaService.findById(id)
                 .map(r -> {
-                    if (!userSecurity.isOwnerOrAdmin(r.getTech().getUsername(), user)) {
-                        throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-                    }
+                    authorize(user, r);
                     return ResponseEntity.ok(toRestDetailedReplica(r));
                 }).orElse(
                         ResponseEntity.notFound().build()
@@ -103,8 +100,17 @@ public class DetailedReplicaController {
     public ResponseEntity<RestToDo> getToDoById(@PathVariable Long id, @AuthenticationPrincipal UserDetails user) {
         return toDoService
                 .findOneById(id)
-                .map(toDo -> ResponseEntity.ok(toRestToDo(toDo)))
+                .map(toDo -> {
+                    authorize(user, toDo.getReplica());
+                    return ResponseEntity.ok(toRestToDo(toDo));
+                })
                 .orElse(ResponseEntity.badRequest().build());
+    }
+
+    private void authorize(UserDetails user, Replica r) {
+        if (!userSecurity.isOwnerOrAdmin(r.getTech().getUsername(), user)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
     }
 
     private RestToDo toRestToDo(ToDo toDo) {

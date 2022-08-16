@@ -3,7 +3,7 @@ package com.miskowiec.airsofttechhelper.user.application.port;
 import lombok.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 
-public interface UserRegistrationUseCase {
+public interface UserUseCase {
     RegisterResponse register(String username, String password);
     UpdatePasswordResponse changePassword(UserDetails user, String newPassword);
 

@@ -29,9 +29,9 @@ import java.util.stream.Collectors;
 import static com.miskowiec.airsofttechhelper.replica.application.port.BasicReplicaUseCase.CreateReplicaCommand;
 
 @RestController
-@RequestMapping("/replicas-list")
+@RequestMapping("/replicas")
 @AllArgsConstructor
-public class BasicReplicasController {
+public class ReplicasController {
     private final BasicReplicaUseCase replicaService;
     private final UserSecurity userSecurity;
 
@@ -65,7 +65,6 @@ public class BasicReplicasController {
                 );
     }
 
-
     private RestBasicReplica toRestBasicReplica(Replica replica) {
         return new RestBasicReplica(replica.getId(), replica.getName(), replica.getStatus(),
                 replica.getCreatedAt(), replica.getReplicaOwner().getEmail());
@@ -98,16 +97,12 @@ public class BasicReplicasController {
     private static class RestReplicaCommand {
         @NotBlank(message = "Please provide a name")
         private String name;
-
         @NotNull(message = "Please provide a description")
         private String description;
-
         @NotNull(message = "Please provide an additional equipment")
         private String additionalEquipment;
-
         @Valid
         private RestOwnerCommand owner;
-
         CreateReplicaCommand toCreateCommand(UserDetails user) {
             return new CreateReplicaCommand(name, description, additionalEquipment, owner.toCreateOwnerCommand(), user);
         }
@@ -117,22 +112,16 @@ public class BasicReplicasController {
     static class RestOwnerCommand {
         @NotBlank(message = "Please provide an Owner name")
         private String name;
-
         @NotBlank(message = "Please provide an Owner phone number")
         private String phone;
-
         @NotBlank(message = "Please provide an Owner street")
         private String street;
-
         @NotBlank(message = "Please provide an Owner city")
         private String city;
-
         @NotBlank(message = "Please provide an Owner zipCode")
         private String zipCode;
-
         @Email(message = "Please provide an Owner email")
         private String email;
-
         CreateOwnerCommand toCreateOwnerCommand() {
             return new CreateOwnerCommand(name, phone, street, city, zipCode, email);
         }
