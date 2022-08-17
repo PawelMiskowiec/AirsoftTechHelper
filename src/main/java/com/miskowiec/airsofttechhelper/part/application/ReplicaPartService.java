@@ -8,7 +8,11 @@ import com.miskowiec.airsofttechhelper.part.domain.PartCategory;
 import com.miskowiec.airsofttechhelper.part.domain.ReplicaPart;
 import com.miskowiec.airsofttechhelper.replica.db.ReplicaJpaRepository;
 import com.miskowiec.airsofttechhelper.replica.domain.Replica;
+import com.miskowiec.airsofttechhelper.user.db.UserEntityRepository;
+import com.miskowiec.airsofttechhelper.user.domain.UserEntity;
 import lombok.AllArgsConstructor;
+import org.hibernate.boot.model.naming.IllegalIdentifierException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,23 +26,25 @@ public class ReplicaPartService implements ReplicaPartUseCase {
     private final ReplicaPartJpaRepository repository;
     private final PartJpaRepository partJpaRepository;
     private final ReplicaJpaRepository replicaJpaRepository;
+    private final UserEntityRepository userEntityRepository;
 
     @Override
-    public List<ReplicaPart> findAll() {
-        return repository.findAll();
+    public List<ReplicaPart> findAllBy(UserDetails user) {
+        return repository.findAllByUsername(user.getUsername());
     }
 
     @Override
-    public List<ReplicaPart> findAllByReplicaId(Long replicaId) {
-        return repository.findAllByReplicaId(replicaId);
+    public List<ReplicaPart> findAllBy(Long replicaId, UserDetails user) {
+        return repository.findAllByReplicaIdAndUsername(replicaId, user.getUsername());
     }
 
     @Override
-    @Transactional
     public ReplicaPart addReplicaPart(CreateReplicaPartCommand command) {
         Part part = getOrAddPart(command);
         Replica replica = replicaJpaRepository.getReferenceById(command.getReplicaId());
-        ReplicaPart replicaPart = new ReplicaPart(command.getNotes(), part, replica);
+        UserEntity user = userEntityRepository.findByUsername(command.getUser().getUsername())
+                .orElseThrow(() -> new IllegalStateException("Currently logged in user is not present in database"));
+        ReplicaPart replicaPart = new ReplicaPart(command.getNotes(), part, replica, user);
         return repository.save(replicaPart);
     }
 

@@ -10,13 +10,13 @@ import java.util.Optional;
 
 public interface ReplicaJpaRepository extends JpaRepository<Replica, Long> {
     @Query(" SELECT r FROM Replica r " +
-            " JOIN FETCH r.replicaOwner JOIN FETCH r.tech " +
-            " WHERE r.tech.username = :username AND r.status = :status ")
+            " JOIN FETCH r.replicaOwner JOIN FETCH r.user " +
+            " WHERE r.user.username = :username AND r.status = :status ")
     List<Replica> findAllByStatusAndUsername(ReplicaStatus status, String username);
 
     @Query(" SELECT r FROM Replica r " +
-            " JOIN FETCH r.replicaOwner JOIN FETCH r.tech " +
-            " WHERE r.tech.username = :username ")
+            " JOIN FETCH r.replicaOwner JOIN FETCH r.user " +
+            " WHERE r.user.username = :username ")
     List<Replica> findAllByUsernameFetchOwnerAndTech(String username);
 
     @Query(" SELECT r FROM Replica r " +
@@ -25,7 +25,7 @@ public interface ReplicaJpaRepository extends JpaRepository<Replica, Long> {
     Optional<Replica> findOneByIdEager(Long id);
 
     @Query(" SELECT r FROM Replica r " +
-            " JOIN FETCH r.replicaOwner JOIN FETCH r.tech t JOIN FETCH t.roles " +
+            " JOIN FETCH r.replicaOwner JOIN FETCH r.user t JOIN FETCH t.roles " +
             " WHERE r.id = :id ")
     Optional<Replica> findOneByIdFetchForAuth(Long id);
 }

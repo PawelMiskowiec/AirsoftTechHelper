@@ -4,19 +4,20 @@ import com.miskowiec.airsofttechhelper.security.UserSecurity;
 import com.miskowiec.airsofttechhelper.user.application.port.UserUseCase;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.ConstraintDefinitionException;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
-
 import java.util.Map;
 
-import static com.miskowiec.airsofttechhelper.user.application.port.UserUseCase.*;
+import static com.miskowiec.airsofttechhelper.user.application.port.UserUseCase.RegisterResponse;
 
 @RestController
 @RequestMapping("/users")
@@ -35,7 +36,11 @@ public class UsersController {
     }
 
     @PatchMapping("/password")
-    public ResponseEntity<?> changePassword(@RequestBody Map<String, String> body, @AuthenticationPrincipal UserDetails user){
+    public ResponseEntity<?> resetPassword(
+            @Valid @Length(min = 6, max = 100, message = "Password must contain 6 to 100 characters")
+            @RequestBody Map<String, String> body,
+            @AuthenticationPrincipal UserDetails user
+    ){
         String password = body.get("password");
         registrationService.changePassword(user, password);
         return ResponseEntity.noContent().build();

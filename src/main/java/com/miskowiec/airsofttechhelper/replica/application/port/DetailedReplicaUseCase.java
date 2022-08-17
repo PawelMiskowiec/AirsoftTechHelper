@@ -22,7 +22,7 @@ public interface DetailedReplicaUseCase {
         String name;
         String description;
         String additionalEquipment;
-        UserDetails tech;
+        UserDetails user;
     }
 
     @Value

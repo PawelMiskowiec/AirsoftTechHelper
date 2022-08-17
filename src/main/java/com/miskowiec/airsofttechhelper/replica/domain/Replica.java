@@ -31,7 +31,7 @@ public class Replica extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "tech_id")
-    private UserEntity tech;
+    private UserEntity user;
 
     @Builder.Default
     @Enumerated(EnumType.STRING)

@@ -5,12 +5,12 @@ import com.miskowiec.airsofttechhelper.replica.domain.Replica;
 import com.miskowiec.airsofttechhelper.replica.application.port.ToDoUseCase;
 import com.miskowiec.airsofttechhelper.replica.db.ToDoJpaRepository;
 import com.miskowiec.airsofttechhelper.replica.domain.ToDo;
-import com.miskowiec.airsofttechhelper.security.UnauthorisedAccessException;
+import com.miskowiec.airsofttechhelper.security.UnauthorizedAccessException;
 import com.miskowiec.airsofttechhelper.security.UserSecurity;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,8 +32,8 @@ public class ToDoService implements ToDoUseCase {
         Replica replica = replicaJpaRepository
                 .findOneByIdFetchForAuth(command.getReplicaId())
                 .map(r -> {
-                    if(!userSecurity.isOwnerOrAdmin(r.getTech().getUsername(), command.getUser())){
-                        throw new UnauthorisedAccessException(command.getUser().getUsername() + " is not authorised to add todos to Replica with id " + r.getId());
+                    if(!userSecurity.isOwnerOrAdmin(r.getUser().getUsername(), command.getUser())){
+                        throw new UnauthorizedAccessException(command.getUser().getUsername() + " is not authorised to add todos to Replica with id " + r.getId());
                     }
                     return r;
                 }).orElseThrow(() -> new IllegalArgumentException("Replica not found"));
@@ -46,7 +46,7 @@ public class ToDoService implements ToDoUseCase {
         return repository
                 .findById(command.getToDoId())
                 .map(toDo -> {
-                    if(userSecurity.isOwnerOrAdmin(toDo.getReplica().getTech().getUsername(), command.getUser())){
+                    if(userSecurity.isOwnerOrAdmin(toDo.getReplica().getUser().getUsername(), command.getUser())){
                         toDo.setContent(command.getContent());
                         toDo.setTitle(command.getTitle());
                         return UpdateToDoResponse.SUCCESS;

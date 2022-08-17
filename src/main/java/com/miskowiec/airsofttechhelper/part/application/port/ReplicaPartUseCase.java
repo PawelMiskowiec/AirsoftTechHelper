@@ -2,14 +2,16 @@ package com.miskowiec.airsofttechhelper.part.application.port;
 
 import com.miskowiec.airsofttechhelper.part.domain.ReplicaPart;
 import lombok.Value;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 public interface ReplicaPartUseCase {
-    List<ReplicaPart> findAll();
-    List<ReplicaPart> findAllByReplicaId(Long replicaId);
+    List<ReplicaPart> findAllBy(UserDetails user);
+    List<ReplicaPart> findAllBy(Long replicaId, UserDetails user);
     ReplicaPart addReplicaPart(CreateReplicaPartCommand command);
     UpdateNotesResponse updateNotes(UpdateReplicaPartNotesCommand command);
 
@@ -20,6 +22,7 @@ public interface ReplicaPartUseCase {
         String name;
         String category;
         String notes;
+        UserDetails user;
 
         public PartUseCase.CreatePartCommand toCreatePartCommand(String partName, String partCategory) {
             return new PartUseCase.CreatePartCommand(partName, partCategory);

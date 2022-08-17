@@ -108,7 +108,7 @@ public class DetailedReplicaController {
     }
 
     private void authorize(UserDetails user, Replica r) {
-        if (!userSecurity.isOwnerOrAdmin(r.getTech().getUsername(), user)) {
+        if (!userSecurity.isOwnerOrAdmin(r.getUser().getUsername(), user)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
     }

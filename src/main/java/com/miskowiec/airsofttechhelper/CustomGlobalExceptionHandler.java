@@ -1,6 +1,6 @@
 package com.miskowiec.airsofttechhelper;
 
-import com.miskowiec.airsofttechhelper.security.UnauthorisedAccessException;
+import com.miskowiec.airsofttechhelper.security.UnauthorizedAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -21,13 +21,18 @@ public class CustomGlobalExceptionHandler {
         return handleError(HttpStatus.BAD_REQUEST, List.of(ex.getMessage()));
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Object> handle(IllegalStateException ex){
+        return handleError(HttpStatus.BAD_REQUEST, List.of(ex.getMessage()));
+    }
+
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Object> handle(ResponseStatusException ex){
         return handleError(ex.getStatus(), List.of(ex.getMessage()));
     }
 
-    @ExceptionHandler(UnauthorisedAccessException.class)
-    public ResponseEntity<Object> handle(UnauthorisedAccessException ex){
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<Object> handle(UnauthorizedAccessException ex){
         return handleError(HttpStatus.FORBIDDEN, List.of(ex.getMessage()));
     }
 

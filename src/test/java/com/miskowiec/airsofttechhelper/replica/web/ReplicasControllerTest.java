@@ -81,10 +81,14 @@ class ReplicasControllerTest {
                 .name(name)
                 .replicaOwner(owner)
                 .status(ReplicaStatus.NEW)
-                .tech(new UserEntity("example@tech.com", "pass123"))
+                .user(givenUserEntity())
                 .build();
         replica.setId(id);
         return replica;
+    }
+
+    private static UserEntity givenUserEntity() {
+        return new UserEntity("example@tech.com", "pass123");
     }
 
     private ReplicaOwner getReplicaOwner() {

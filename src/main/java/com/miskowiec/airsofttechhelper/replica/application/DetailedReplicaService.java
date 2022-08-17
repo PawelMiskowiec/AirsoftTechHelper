@@ -6,8 +6,8 @@ import com.miskowiec.airsofttechhelper.replica.domain.Replica;
 import com.miskowiec.airsofttechhelper.security.UserSecurity;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +29,7 @@ public class DetailedReplicaService implements DetailedReplicaUseCase {
     public UpdateReplicaResponse updateReplica(UpdateReplicaCommand command) {
         return repository.findById(command.getReplicaId())
                 .map(replica -> {
-                    if(userSecurity.isOwnerOrAdmin(replica.getTech().getUsername(), command.getTech())){
+                    if(userSecurity.isOwnerOrAdmin(replica.getUser().getUsername(), command.getUser())){
                         updateFields(command, replica);
                         return UpdateReplicaResponse.SUCCESS;
                     }

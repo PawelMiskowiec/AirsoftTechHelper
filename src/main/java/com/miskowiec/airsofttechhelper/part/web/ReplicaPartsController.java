@@ -11,6 +11,8 @@ import lombok.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -31,12 +33,12 @@ public class ReplicaPartsController {
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/")
-    public ResponseEntity<Object> getAll(@RequestParam Optional<Long> replicaId){
+    public ResponseEntity<Object> getAllUser(@RequestParam Optional<Long> replicaId, @AuthenticationPrincipal UserDetails user){
         if(replicaId.isPresent()){
-            List<ReplicaPart> replicaParts = replicaPartService.findAllByReplicaId(replicaId.get());
+            List<ReplicaPart> replicaParts = replicaPartService.findAllBy(replicaId.get(), user);
             return ResponseEntity.ok(toRestReplicaPartsList(replicaParts));
         }
-        List<ReplicaPart> replicaParts = replicaPartService.findAll();
+        List<ReplicaPart> replicaParts = replicaPartService.findAllBy(user);
         return ResponseEntity.ok(toRestReplicaPartsList(replicaParts));
     }
 
@@ -55,9 +57,10 @@ public class ReplicaPartsController {
     @PostMapping("/")
     public ResponseEntity<Object> addReplicaPart(
             @RequestParam Optional<Long> partId,
-            @RequestBody @Valid RestAddPartAndReplicaPartCommand command
+            @RequestBody @Valid RestAddPartAndReplicaPartCommand command,
+            @AuthenticationPrincipal UserDetails user
     ){
-        ReplicaPart replicaPart = replicaPartService.addReplicaPart(command.toCreateReplicaPartCommand(partId));
+        ReplicaPart replicaPart = replicaPartService.addReplicaPart(command.toCreateReplicaPartCommand(partId, user));
         URI uri = new CreatedURI("/replica-part/" + replicaPart.getId()).uri();
         return ResponseEntity.created(uri).build();
     }
@@ -83,8 +86,8 @@ public class ReplicaPartsController {
         String category;
         @NotBlank
         String notes;
-        CreateReplicaPartCommand toCreateReplicaPartCommand(Optional<Long> partId){
-            return new CreateReplicaPartCommand(replicaId, partId, name, category, notes);
+        CreateReplicaPartCommand toCreateReplicaPartCommand(Optional<Long> partId, UserDetails user){
+            return new CreateReplicaPartCommand(replicaId, partId, name, category, notes, user);
         }
     }
 

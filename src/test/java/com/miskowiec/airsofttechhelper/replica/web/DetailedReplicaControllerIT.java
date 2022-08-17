@@ -51,10 +51,10 @@ class DetailedReplicaControllerIT {
         Replica replica = givenReplica("GG tr16 308 sr", "example@tech.com", userDetails);
         ReplicaPartUseCase.CreateReplicaPartCommand command =
                 new ReplicaPartUseCase.CreateReplicaPartCommand(replica.getId(), Optional.empty(), "First Part",
-                        "HopUp", "Very good part");
+                        "HopUp", "Very good part", userDetails);
         ReplicaPartUseCase.CreateReplicaPartCommand command2 =
                 new ReplicaPartUseCase.CreateReplicaPartCommand(replica.getId(), Optional.empty(), "Second Part",
-                        "misc", "Very good part");
+                        "misc", "Very good part", userDetails);
 
         System.out.println("\nAdding first part \n");
         ReplicaPart replicaPart = replicaPartService.addReplicaPart(command);

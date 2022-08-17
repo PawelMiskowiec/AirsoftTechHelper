@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import javax.validation.constraints.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +48,7 @@ public class ReplicasController {
             replicas = replicaService.findAllUserReplicas(user.getUsername());
         }
         return replicas.stream()
-                .filter(replica -> replica.getTech().getUsername().equalsIgnoreCase(user.getUsername()))
+                .filter(replica -> replica.getUser().getUsername().equalsIgnoreCase(user.getUsername()))
                 .map(this::toRestBasicReplica)
                 .collect(Collectors.toList());
     }
@@ -56,7 +58,7 @@ public class ReplicasController {
     public ResponseEntity<RestBasicReplica> getReplicaById(@PathVariable Long id, @AuthenticationPrincipal UserDetails user) {
         return replicaService.findOneById(id)
                 .map(r -> {
-                    if (!userSecurity.isOwnerOrAdmin(r.getTech().getUsername(), user)) {
+                    if (!userSecurity.isOwnerOrAdmin(r.getUser().getUsername(), user)) {
                         throw new ResponseStatusException(HttpStatus.FORBIDDEN);
                     }
                     return ResponseEntity.ok(toRestBasicReplica(r));

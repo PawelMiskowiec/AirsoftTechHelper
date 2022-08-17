@@ -11,8 +11,9 @@ import com.miskowiec.airsofttechhelper.user.db.UserEntityRepository;
 import com.miskowiec.airsofttechhelper.user.domain.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -55,7 +56,7 @@ public class BasicReplicaService implements BasicReplicaUseCase {
         return repository
                 .findOneByIdFetchForAuth(command.getReplicaId())
                 .map(replica -> {
-                    if(!userSecurity.isOwnerOrAdmin(replica.getTech().getUsername(), command.getUser())){
+                    if(!userSecurity.isOwnerOrAdmin(replica.getUser().getUsername(), command.getUser())){
                         return new UpdateStatusResponse(
                                 false,
                                 "User " + command.getUser().getUsername() + " is not authorised to update this replica",
@@ -83,7 +84,7 @@ public class BasicReplicaService implements BasicReplicaUseCase {
     }
 
     private Replica toReplica(CreateReplicaCommand command) {
-        UserEntity tech = userEntityRepository
+        UserEntity user = userEntityRepository
                 .findByUsername(command.getUser().getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("Couldn't find user " + command.getUser().getUsername()));
         ReplicaOwner replicaOwner = getOrCreateOwner(command.getOwnerCommand());
@@ -92,7 +93,7 @@ public class BasicReplicaService implements BasicReplicaUseCase {
                 .description(command.getDescription())
                 .additionalEquipment(command.getAdditionalEquipment())
                 .replicaOwner(replicaOwner)
-                .tech(tech)
+                .user(user)
                 .build();
     }
 

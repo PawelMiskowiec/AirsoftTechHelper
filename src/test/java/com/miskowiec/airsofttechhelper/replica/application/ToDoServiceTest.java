@@ -5,7 +5,7 @@ import com.miskowiec.airsofttechhelper.replica.application.port.ToDoUseCase.Crea
 import com.miskowiec.airsofttechhelper.replica.db.ToDoJpaRepository;
 import com.miskowiec.airsofttechhelper.replica.domain.Replica;
 import com.miskowiec.airsofttechhelper.replica.domain.ToDo;
-import com.miskowiec.airsofttechhelper.security.UnauthorisedAccessException;
+import com.miskowiec.airsofttechhelper.security.UnauthorizedAccessException;
 import com.miskowiec.airsofttechhelper.security.UserEntityDetails;
 import com.miskowiec.airsofttechhelper.user.db.UserEntityRepository;
 import com.miskowiec.airsofttechhelper.user.domain.UserEntity;
@@ -58,7 +58,7 @@ class ToDoServiceTest {
         String expectedExMessage = unauthorisedTech.getUsername() + " is not authorised to add todos to Replica with id " + replica.getId();
 
         //when
-        UnauthorisedAccessException exception = Assertions.assertThrows(UnauthorisedAccessException.class, () -> {
+        UnauthorizedAccessException exception = Assertions.assertThrows(UnauthorizedAccessException.class, () -> {
                 toDoService.addToDo(command);
         });
 

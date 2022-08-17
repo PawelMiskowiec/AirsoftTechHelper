@@ -2,6 +2,7 @@ package com.miskowiec.airsofttechhelper.part.domain;
 
 import com.miskowiec.airsofttechhelper.jpa.BaseEntity;
 import com.miskowiec.airsofttechhelper.replica.domain.Replica;
+import com.miskowiec.airsofttechhelper.user.domain.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,10 +31,15 @@ public class ReplicaPart extends BaseEntity {
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     private Replica replica;
 
-    public ReplicaPart(String notes, Part part, Replica replica) {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "tech_id")
+    private UserEntity user;
+
+    public ReplicaPart(String notes, Part part, Replica replica, UserEntity user) {
         this.notes = notes;
         this.part = part;
         this.replica = replica;
+        this.user = user;
     }
 
     @CreatedDate
