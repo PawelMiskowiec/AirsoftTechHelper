@@ -75,7 +75,7 @@ public class BasicReplicaService implements BasicReplicaUseCase {
                 );
     }
 
-    private ReplicaStatus toReplicaStatus(String status) {
+    private ReplicaStatus toReplicaStatus(String status){
         return ReplicaStatus
                 .parseString(status)
                 .orElseThrow(() ->

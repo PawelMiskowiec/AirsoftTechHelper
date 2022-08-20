@@ -19,8 +19,14 @@
         <springdoc.openapi.version>1.6.9</springdoc.openapi.version>
         <flyway.version>8.5.13</flyway.version>
         <h2.version>1.4.200</h2.version>
+        <jwt.version>0.9.1</jwt.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>${jwt.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>

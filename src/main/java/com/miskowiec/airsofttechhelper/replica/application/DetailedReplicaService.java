@@ -31,6 +31,7 @@ public class DetailedReplicaService implements DetailedReplicaUseCase {
                 .map(replica -> {
                     if(userSecurity.isOwnerOrAdmin(replica.getUser().getUsername(), command.getUser())){
                         updateFields(command, replica);
+                        repository.save(replica);
                         return UpdateReplicaResponse.SUCCESS;
                     }
                     return new UpdateReplicaResponse(false, List.of("Unauthorised"), ErrorStatus.FORBIDDEN);

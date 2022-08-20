@@ -1,6 +1,7 @@
-package com.miskowiec.airsofttechhelper.part.web;
+package com.part.web;
 
 import com.miskowiec.airsofttechhelper.part.application.port.ReplicaPartUseCase;
+import com.miskowiec.airsofttechhelper.part.web.ReplicaPartsController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
