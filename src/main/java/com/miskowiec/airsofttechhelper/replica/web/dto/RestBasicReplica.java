@@ -11,5 +11,5 @@ public class RestBasicReplica {
     String name;
     ReplicaStatus status;
     LocalDateTime createdAt;
-    String ownerName;
+    String ownerEmail;
 }

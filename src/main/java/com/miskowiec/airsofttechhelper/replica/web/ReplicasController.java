@@ -69,7 +69,7 @@ public class ReplicasController {
 
     private RestBasicReplica toRestBasicReplica(Replica replica) {
         return new RestBasicReplica(replica.getId(), replica.getName(), replica.getStatus(),
-                replica.getCreatedAt(), replica.getReplicaOwner().getName());
+                replica.getCreatedAt(), replica.getReplicaOwner().getEmail());
     }
 
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
