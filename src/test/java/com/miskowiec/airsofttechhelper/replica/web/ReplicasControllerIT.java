@@ -4,7 +4,7 @@ import com.miskowiec.airsofttechhelper.replica.application.port.BasicReplicaUseC
 import com.miskowiec.airsofttechhelper.replica.domain.Replica;
 import com.miskowiec.airsofttechhelper.replica.web.dto.RestBasicReplica;
 import com.miskowiec.airsofttechhelper.security.UserEntityDetails;
-import com.miskowiec.airsofttechhelper.user.db.UserEntityRepository;
+import com.miskowiec.airsofttechhelper.user.db.UserEntityJpaRepository;
 import com.miskowiec.airsofttechhelper.user.domain.UserEntity;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ class ReplicasControllerIT {
     @Autowired
     ReplicasController replicasController;
     @Autowired
-    UserEntityRepository userEntityRepository;
+    UserEntityJpaRepository userEntityJpaRepository;
 
 
     //Use of transactional resulted in non-deterministic test execution as the database had some additional replica
@@ -62,7 +62,7 @@ class ReplicasControllerIT {
 
     private UserDetails givenUserDetails() {
         UserEntity userEntity = new UserEntity("example@tech.com", "123");
-        userEntityRepository.save(userEntity);
+        userEntityJpaRepository.save(userEntity);
         return new UserEntityDetails(userEntity);
     }
 

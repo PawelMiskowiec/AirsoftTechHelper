@@ -19,5 +19,4 @@ public interface ReplicaPartJpaRepository extends JpaRepository<ReplicaPart, Lon
             " WHERE u.username = :username AND r.id = :id ")
     List<ReplicaPart> findAllByReplicaIdAndUsername(Long id, String username);
 
-    Optional<ReplicaPart> findFirstByPartId(Long partId);
 }

@@ -1,7 +1,7 @@
 package com.miskowiec.airsofttechhelper.security;
 
 
-import com.miskowiec.airsofttechhelper.user.db.UserEntityRepository;
+import com.miskowiec.airsofttechhelper.user.db.UserEntityJpaRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +14,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -33,7 +32,7 @@ import java.util.Arrays;
 class AthSecurityConfiguration {
 
     private final AuthenticationConfiguration configuration;
-    private final UserEntityRepository userEntityRepository;
+    private final UserEntityJpaRepository userEntityJpaRepository;
     private final AdminConfig adminConfig;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -72,7 +71,7 @@ class AthSecurityConfiguration {
     @Bean
     AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        AthUserDetailsService detailsService = new AthUserDetailsService(userEntityRepository, adminConfig);
+        AthUserDetailsService detailsService = new AthUserDetailsService(userEntityJpaRepository, adminConfig);
         provider.setUserDetailsService(detailsService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;

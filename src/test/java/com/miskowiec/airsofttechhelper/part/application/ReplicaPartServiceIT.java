@@ -1,6 +1,5 @@
 package com.miskowiec.airsofttechhelper.part.application;
 
-import com.miskowiec.airsofttechhelper.part.application.port.ReplicaPartUseCase;
 import com.miskowiec.airsofttechhelper.part.db.PartJpaRepository;
 import com.miskowiec.airsofttechhelper.part.db.ReplicaPartJpaRepository;
 import com.miskowiec.airsofttechhelper.part.domain.Part;
@@ -9,7 +8,7 @@ import com.miskowiec.airsofttechhelper.part.domain.ReplicaPart;
 import com.miskowiec.airsofttechhelper.replica.db.ReplicaJpaRepository;
 import com.miskowiec.airsofttechhelper.replica.domain.Replica;
 import com.miskowiec.airsofttechhelper.security.UserEntityDetails;
-import com.miskowiec.airsofttechhelper.user.db.UserEntityRepository;
+import com.miskowiec.airsofttechhelper.user.db.UserEntityJpaRepository;
 import com.miskowiec.airsofttechhelper.user.domain.UserEntity;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -39,7 +38,7 @@ class ReplicaPartServiceIT {
     ReplicaPartJpaRepository repository;
 
     @Autowired
-    UserEntityRepository userEntityRepository;
+    UserEntityJpaRepository userEntityJpaRepository;
 
     @Autowired
     ReplicaJpaRepository replicaJpaRepository;
@@ -88,7 +87,7 @@ class ReplicaPartServiceIT {
         UserDetails userDetails = givenAuthPrincipal("example@tech.com");
         Replica replica = givenReplica("tr16 test");
         Part part = givenPart("testPart");
-        UserEntity user = userEntityRepository.findByUsername(userDetails.getUsername()).get();
+        UserEntity user = userEntityJpaRepository.findByUsername(userDetails.getUsername()).get();
         CreateReplicaPartCommand command = new CreateReplicaPartCommand(
                 replica.getId(),
                 Optional.of(part.getId()),
@@ -144,7 +143,7 @@ class ReplicaPartServiceIT {
     private ReplicaPart givenReplicaPart(String notes, UserDetails userDetails, Long replicaId){
         Part part = new Part();
         Replica replica = replicaJpaRepository.getReferenceById(replicaId);
-        UserEntity user = userEntityRepository.findByUsername(userDetails.getUsername()).get();
+        UserEntity user = userEntityJpaRepository.findByUsername(userDetails.getUsername()).get();
         return repository.save(new ReplicaPart(notes, part, replica, user));
     }
 
@@ -156,7 +155,7 @@ class ReplicaPartServiceIT {
 
     private UserDetails givenAuthPrincipal(String username){
         UserEntity userEntity = new UserEntity(username, "123");
-        userEntityRepository.save(userEntity);
+        userEntityJpaRepository.save(userEntity);
         return new UserEntityDetails(userEntity);
     }
 }

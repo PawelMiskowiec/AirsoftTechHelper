@@ -1,6 +1,6 @@
 package com.miskowiec.airsofttechhelper.security;
 
-import com.miskowiec.airsofttechhelper.user.db.UserEntityRepository;
+import com.miskowiec.airsofttechhelper.user.db.UserEntityJpaRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 @AllArgsConstructor
 public class AthUserDetailsService implements UserDetailsService {
 
-    private final UserEntityRepository userEntityRepository;
+    private final UserEntityJpaRepository userEntityJpaRepository;
     private final AdminConfig adminConfig;
 
     @Override
@@ -17,7 +17,7 @@ public class AthUserDetailsService implements UserDetailsService {
         if(adminConfig.getUsername().equalsIgnoreCase(username)){
             return adminConfig.adminUser();
         }
-        return userEntityRepository.findByUsername(username)
+        return userEntityJpaRepository.findByUsername(username)
                 .map(UserEntityDetails::new)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
     }

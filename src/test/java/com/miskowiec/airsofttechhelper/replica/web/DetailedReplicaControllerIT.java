@@ -11,7 +11,7 @@ import com.miskowiec.airsofttechhelper.replica.application.ToDoService;
 import com.miskowiec.airsofttechhelper.replica.application.port.ToDoUseCase;
 import com.miskowiec.airsofttechhelper.replica.domain.ToDo;
 import com.miskowiec.airsofttechhelper.security.UserEntityDetails;
-import com.miskowiec.airsofttechhelper.user.db.UserEntityRepository;
+import com.miskowiec.airsofttechhelper.user.db.UserEntityJpaRepository;
 import com.miskowiec.airsofttechhelper.user.domain.UserEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +42,7 @@ class DetailedReplicaControllerIT {
     BasicReplicaService basicReplicaService;
 
     @Autowired
-    UserEntityRepository userEntityRepository;
+    UserEntityJpaRepository userEntityJpaRepository;
 
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
@@ -91,7 +91,7 @@ class DetailedReplicaControllerIT {
 
     private UserDetails givenUserDetails() {
         UserEntity userEntity = new UserEntity("example@tech.com", "123");
-        userEntityRepository.save(userEntity);
+        userEntityJpaRepository.save(userEntity);
         return new UserEntityDetails(userEntity);
     }
 

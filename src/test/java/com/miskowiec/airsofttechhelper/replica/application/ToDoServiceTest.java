@@ -7,7 +7,7 @@ import com.miskowiec.airsofttechhelper.replica.domain.Replica;
 import com.miskowiec.airsofttechhelper.replica.domain.ToDo;
 import com.miskowiec.airsofttechhelper.security.UnauthorizedAccessException;
 import com.miskowiec.airsofttechhelper.security.UserEntityDetails;
-import com.miskowiec.airsofttechhelper.user.db.UserEntityRepository;
+import com.miskowiec.airsofttechhelper.user.db.UserEntityJpaRepository;
 import com.miskowiec.airsofttechhelper.user.domain.UserEntity;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ class ToDoServiceTest {
     @Autowired
     ToDoService toDoService;
     @Autowired
-    UserEntityRepository userEntityRepository;
+    UserEntityJpaRepository userEntityJpaRepository;
     @Autowired
     BasicReplicaService basicReplicaService;
     @Autowired
@@ -83,7 +83,7 @@ class ToDoServiceTest {
 
     private UserDetails givenUserDetails(String userMail) {
         UserEntity userEntity = new UserEntity(userMail, "123");
-        userEntityRepository.save(userEntity);
+        userEntityJpaRepository.save(userEntity);
         return new UserEntityDetails(userEntity);
     }
 

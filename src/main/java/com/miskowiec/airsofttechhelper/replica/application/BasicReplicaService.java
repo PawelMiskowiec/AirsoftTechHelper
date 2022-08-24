@@ -7,7 +7,7 @@ import com.miskowiec.airsofttechhelper.replica.domain.ReplicaOwner;
 import com.miskowiec.airsofttechhelper.replica.domain.Replica;
 import com.miskowiec.airsofttechhelper.replica.domain.ReplicaStatus;
 import com.miskowiec.airsofttechhelper.security.UserSecurity;
-import com.miskowiec.airsofttechhelper.user.db.UserEntityRepository;
+import com.miskowiec.airsofttechhelper.user.db.UserEntityJpaRepository;
 import com.miskowiec.airsofttechhelper.user.domain.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class BasicReplicaService implements BasicReplicaUseCase {
 
     private final ReplicaJpaRepository repository;
     private final OwnerJpaRepository ownerJpaRepository;
-    private final UserEntityRepository userEntityRepository;
+    private final UserEntityJpaRepository userEntityJpaRepository;
     private final UserSecurity userSecurity;
 
 
@@ -84,7 +84,7 @@ public class BasicReplicaService implements BasicReplicaUseCase {
     }
 
     private Replica toReplica(CreateReplicaCommand command) {
-        UserEntity user = userEntityRepository
+        UserEntity user = userEntityJpaRepository
                 .findByUsername(command.getUser().getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("Couldn't find user " + command.getUser().getUsername()));
         ReplicaOwner replicaOwner = getOrCreateOwner(command.getOwnerCommand());

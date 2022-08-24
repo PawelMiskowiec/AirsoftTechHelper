@@ -5,7 +5,7 @@ import com.miskowiec.airsofttechhelper.replica.application.port.DetailedReplicaU
 import com.miskowiec.airsofttechhelper.replica.db.ReplicaJpaRepository;
 import com.miskowiec.airsofttechhelper.replica.domain.Replica;
 import com.miskowiec.airsofttechhelper.security.UserEntityDetails;
-import com.miskowiec.airsofttechhelper.user.db.UserEntityRepository;
+import com.miskowiec.airsofttechhelper.user.db.UserEntityJpaRepository;
 import com.miskowiec.airsofttechhelper.user.domain.UserEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ class DetailedReplicaServiceIT {
     ReplicaJpaRepository replicaJpaRepository;
 
     @Autowired
-    UserEntityRepository userEntityRepository;
+    UserEntityJpaRepository userEntityJpaRepository;
 
     @Test
     void findById() {
@@ -95,7 +95,7 @@ class DetailedReplicaServiceIT {
 
     private UserDetails givenUserDetails() {
         UserEntity userEntity = new UserEntity("example@tech.com", "123");
-        userEntityRepository.save(userEntity);
+        userEntityJpaRepository.save(userEntity);
         return new UserEntityDetails(userEntity);
     }
 

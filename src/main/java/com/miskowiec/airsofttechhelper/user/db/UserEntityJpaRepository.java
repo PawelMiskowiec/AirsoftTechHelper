@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-public interface UserEntityRepository extends JpaRepository<UserEntity, Long> {
+public interface UserEntityJpaRepository extends JpaRepository<UserEntity, Long> {
     @Query(" SELECT u " +
             " FROM UserEntity u JOIN FETCH u.roles " +
             " WHERE u.username = :username " )

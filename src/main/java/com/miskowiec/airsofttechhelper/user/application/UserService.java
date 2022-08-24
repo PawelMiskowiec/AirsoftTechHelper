@@ -1,8 +1,7 @@
 package com.miskowiec.airsofttechhelper.user.application;
 
-import com.miskowiec.airsofttechhelper.security.UserSecurity;
 import com.miskowiec.airsofttechhelper.user.application.port.UserUseCase;
-import com.miskowiec.airsofttechhelper.user.db.UserEntityRepository;
+import com.miskowiec.airsofttechhelper.user.db.UserEntityJpaRepository;
 import com.miskowiec.airsofttechhelper.user.domain.UserEntity;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @AllArgsConstructor
 public class UserService implements UserUseCase {
-    private final UserEntityRepository repository;
+    private final UserEntityJpaRepository repository;
     private final PasswordEncoder encoder;
 
     @Transactional
