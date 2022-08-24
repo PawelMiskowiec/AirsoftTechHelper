@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @AutoConfigureTestDatabase
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class DetailedReplicaServiceTest {
+class DetailedReplicaServiceIT {
 
     @Autowired
     BasicReplicaService basicReplicaService;
