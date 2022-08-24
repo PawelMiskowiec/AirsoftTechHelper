@@ -17,8 +17,6 @@ public class UserService implements UserUseCase {
     private final UserEntityRepository repository;
     private final PasswordEncoder encoder;
 
-    private final UserSecurity userSecurity;
-
     @Transactional
     @Override
     public RegisterResponse register(String username, String password) {

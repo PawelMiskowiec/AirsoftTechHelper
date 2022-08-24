@@ -92,8 +92,8 @@ class ReplicaPartServiceIT {
         CreateReplicaPartCommand command = new CreateReplicaPartCommand(
                 replica.getId(),
                 Optional.of(part.getId()),
-                "test replica part",
-                "MISC",
+                null,
+                null,
                 "test notes",
                 userDetails
         );
@@ -105,6 +105,8 @@ class ReplicaPartServiceIT {
         assertEquals(saved, repository.findById(saved.getId()).get());
 
     }
+
+
 
     @Test
     void updateNotes() {
@@ -119,7 +121,21 @@ class ReplicaPartServiceIT {
 
         //then
         Assertions.assertEquals("updated", repository.findById(replicaPart.getId()).get().getNotes());
+    }
 
+    @Test
+    void cannotUpdateNotesOfNonexistentReplicaPart(){
+        //given
+        UserDetails user = givenAuthPrincipal("example@tech.com");
+        Replica replica = givenReplica("tr16 test");
+        ReplicaPart replicaPart = givenReplicaPart("pre update", user, replica.getId());
+        UpdateReplicaPartNotesCommand command = new UpdateReplicaPartNotesCommand(replicaPart.getId()+1, "updated");
+
+        //when
+        replicaPartService.updateNotes(command);
+
+        //then
+        Assertions.assertEquals("pre update", repository.findById(replicaPart.getId()).get().getNotes());
     }
 
     private Part givenPart(String name){
